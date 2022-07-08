@@ -1,5 +1,7 @@
 # Signa
- 
+
+**Quickstart:** <code>python example.py</code>
+
 ## EN
 Welcome to Signa library source code.
 
