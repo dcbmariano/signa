@@ -3,7 +3,8 @@
 **Quickstart:** 
 <code>python example.py</code>
 
-<img src="./docs/img/signa.png" style="width:400px">
+<img src="./docs/img/header.png">
+<img src="./docs/img/about.png">
 
 ## EN
 Welcome to Signa library source code.
