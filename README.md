@@ -67,9 +67,9 @@ signa.read_csv('lista.csv', 'csm-hp')
 
 ## Signa by Laboratório de Bioinformática e Sistemas
 Contributions by:
-- (Diego Mariano)[https://github.com/dcbmariano]
+- [Diego Mariano](https://github.com/dcbmariano)
 - Eduardo Utsch Madureira Moreira
-- Frederico Chaves Carvalho
+- [Frederico Chaves Carvalho](https://github.com/fccarvalho2)
 - Lucas Moraes
 - Raquel Cardoso de Melo Minardi
 - and many others.
