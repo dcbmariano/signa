@@ -23,7 +23,7 @@ Signa was developed using the Python language, which guarantees a simple and fri
 - and many others
 
 ### Simple use:
-ˋˋˋ
+~~~
 import signa
 
 signature = open('2lzm.pdb', 'csm')
@@ -31,7 +31,7 @@ print(signature)
 
 #Dealing with several PDB files
 signa.read_csv('lista.csv', 'csm-hp')
-ˋˋˋ
+~~~
 
 ## PT-BR
 Bem-vindo(a) ao código-fonte da biblioteca Signa.
@@ -42,7 +42,7 @@ Signa foi desenvolvido utilizando a linguagem Python, o que garante uma sintaxe 
 
 
 ### Como usar Signa em seus scripts Python?
-ˋˋˋ
+~~~
 import signa
 
 signature = open('2lzm.pdb', 'csm')
@@ -50,7 +50,7 @@ print(signature)
 
 #Para processar múltiplos arquivos PDB, use:
 signa.read_csv('lista.csv', 'csm-hp')
-ˋˋˋ
+~~~
 
 ### Assinaturas e métodos disponíveis
 

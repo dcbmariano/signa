@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg155"
+   inkscape:version="1.1.2 (b8e25be8, 2022-02-05)"
+   sodipodi:docname="desenho-1.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview157"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.56747334"
+     inkscape:cx="397.37549"
+     inkscape:cy="561.25984"
+     inkscape:window-width="2560"
+     inkscape:window-height="1027"
+     inkscape:window-x="1512"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs152" />
+  <g
+     inkscape:label="Camada 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path327"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:2.19728;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M 104.90518,0.55946143 A 104.03138,104.03138 0 0 0 0.87466957,104.59121 104.03138,104.03138 0 0 0 104.90518,208.62296 104.03138,104.03138 0 0 0 208.93694,104.59121 104.03138,104.03138 0 0 0 104.90518,0.55946143 Z m 1.21431,11.75872957 c 18.52925,0.229974 36.30125,6.055088 47.22827,15.480439 4.65934,4.018979 5.30205,5.232569 2.19583,4.144123 -2.41631,-0.846736 -9.89175,-2.581707 -16.61222,-3.855944 -42.137707,-7.989468 -61.817807,21.244628 -31.25892,46.43392 10.6791,8.8026 8.88944,8.57055 -7.17371,-0.93227 C 76.518183,59.401789 67.348743,43.711676 73.890133,28.05602 78.915353,16.02889 86.998933,12.081327 106.11949,12.318191 Z m -44.112477,15.673791 -1.2574,7.748838 c -3.22836,19.894316 12.95794,37.878789 45.884657,50.982002 33.85265,13.471738 49.19658,24.011278 56.87736,39.066858 8.09983,15.87701 4.13744,36.65423 -9.40154,49.29972 l -5.15646,4.8153 0.6404,-11.40527 C 150.76516,147.62478 139.07114,136.29901 100.22411,120.68619 73.204743,109.82695 52.548563,95.339642 46.075833,82.707999 c -7.96216,-15.53818 -3.5925,-36.495661 10.31537,-49.475825 z m 32.03109,98.919628 12.064147,6.30425 c 16.37988,8.55951 29.75367,22.16346 31.63207,32.17641 1.8959,10.10614 -2.62139,21.32121 -10.72672,26.63201 -8.1218,5.32163 -27.981257,6.46247 -42.348897,2.4323 -13.07581,-3.66782 -21.06389,-7.63587 -29.06185,-14.43364 -4.52949,-3.84987 -4.72216,-4.40583 -1.09853,-3.17367 2.4163,0.82192 9.89175,2.53737 16.61222,3.8116 42.287327,8.01779 61.579177,-20.84748 31.210877,-46.69871 z" />
+  </g>
+</svg>
