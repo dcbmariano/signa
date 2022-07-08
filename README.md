@@ -13,14 +13,14 @@ Signa reimplements a series of methods for building structural signatures based 
 Signa was developed using the Python language, which guarantees a simple and friendly syntax, in addition to high performance and a fast running time.
 
 ### Signatures and methods available
-- CSM
+- CSM 
 - aCSM
 - CSM-HP
 - SSV
-- VTR
-- Proteus
-- PSE
-- Contacts
+- VTR (in developing)
+- Proteus (in developing)
+- PSE (in developing)
+- Contacts (in developing)
 - and many others
 
 ### Simple use:
@@ -59,10 +59,10 @@ signa.read_csv('lista.csv', 'csm-hp')
 - aCSM
 - CSM-HP
 - SSV
-- VTR
-- Proteus
-- PSE
-- Contacts
+- VTR (em desenvolvimento)
+- Proteus (em desenvolvimento)
+- PSE (em desenvolvimento)
+- Contacts (em desenvolvimento)
 - E muito mais
 
 ## Signa by Laboratório de Bioinformática e Sistemas

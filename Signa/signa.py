@@ -41,6 +41,20 @@ def readFile(filename):
     for line in open(filename):
         yield line
 
+def read_pdb(pdbID):
+    """ Read a PDB file """
+
+    residues = []
+    atom_name = []
+    coords = []
+
+    for line in readFile(pdbID):
+        if line[0:4] == 'ATOM':
+           coords.append([float(line[31:38]),float(line[39:46]),float(line[47:54])])
+           residues.append(line[17:20].strip())
+           atom_name.append(line[13:16].strip())
+
+    return atom_name, coords, residues
 
 def read_mmcif():
     pass
@@ -106,17 +120,9 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=10,
     sign = ''
 
     # ------------------------------------------------------------------------
-
-    residues = []
-    atom_name = []
-    coords = []
-
-    # Get all coords
-    for line in readFile(pdbID):
-        if line[0:4] == 'ATOM':
-            coords.append([float(line[31:38]), float(line[39:46]), float(line[47:54])])
-            residues.append(line[17:20].strip())
-            atom_name.append(line[13:16].strip())
+    # Get atoms coords
+    # ------------------------------------------------------------------------
+    atom_name, coords, residues = read_pdb(pdbID)
 
     k = len(coords)
     resatom = np.array([residues[x]+atom_name[x] for x in range(k)])
@@ -247,17 +253,9 @@ def csm_hp(pdbID, signa_type = 'csm', cutoff_limit=10, cutoff_step=0.1, output_c
     sign = ''
 
     # ------------------------------------------------------------------------
-
-    residues = []
-    atom_name = []
-    coords = []
-
-    # Get all coords
-    for line in readFile(pdbID):
-        if line[0:4] == 'ATOM':
-           coords.append([float(line[31:38]),float(line[39:46]),float(line[47:54])])
-           residues.append(line[17:20].strip())
-           atom_name.append(line[13:16].strip())
+    # Get atoms coords
+    # ------------------------------------------------------------------------
+    atom_name, coords, residues = read_pdb(pdbID)
 
     k = len(coords)
     resatom = np.array([residues[x]+atom_name[x] for x in range(k)])
@@ -402,17 +400,9 @@ def acsm(pdbID, signa_type = 'acsm', cutoff_limit=10, cutoff_step=0.1, output_cs
     sign = ''
 
     # ------------------------------------------------------------------------
-
-    residues = []
-    atom_name = []
-    coords = []
-
-    # Get all coords
-    for line in readFile(pdbID):
-        if line[0:4] == 'ATOM':
-           coords.append([float(line[31:38]),float(line[39:46]),float(line[47:54])])
-           residues.append(line[17:20].strip())
-           atom_name.append(line[13:16].strip())
+    # Get atoms coords
+    # ------------------------------------------------------------------------
+    atom_name, coords, residues = read_pdb(pdbID)
 
     k = len(coords)
     resatom = np.array([residues[x]+atom_name[x] for x in range(k)])
@@ -487,13 +477,31 @@ def asmc():
     pass
 
 
-def ssv():
-    pass
-
-
 def contacts():
     """Implements contacts calculus"""
     pass
+
+
+def ssv(pdb1, pdb2, signa_type='acsm', cutoff_limit=10, 
+    cutoff_step=0.1, output_csv=False):
+    """
+        Implements SSV algorithm
+        Input: two PDB files
+        Output: a float number
+        SSV returns the difference between the macromolecules' signatures
+
+        Please, cite: 
+            MARIANO, Diego et al. A computational method to propose mutations 
+            in enzymes based on structural signature variation (SSV). 
+            International journal of molecular sciences, 
+            v. 20, n. 2, p. 333, 2019.
+    """
+    signa_pdb1 = acsm(pdb1, signa_type, cutoff_limit, cutoff_step, output_csv)
+    signa_pdb2 = acsm(pdb1, signa_type, cutoff_limit, cutoff_step, output_csv)
+
+    ssv = distance.pdist([signa_pdb1, signa_pdb2], metric='euclidean')
+
+    return ssv[0]
 
 
 def read(pdbID, signa_type, cutoff_limit = 10, cutoff_step = 0.1, output_csv = True):
