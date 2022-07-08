@@ -27,7 +27,7 @@ Signa was developed using the Python language, which guarantees a simple and fri
 ~~~
 import signa
 
-signature = open('2lzm.pdb', 'csm')
+signature = signa.read('2lzm.pdb', 'csm')
 print(signature)
 
 #Dealing with several PDB files
@@ -46,7 +46,7 @@ Signa foi desenvolvido utilizando a linguagem Python, o que garante uma sintaxe 
 ~~~
 import signa
 
-signature = open('2lzm.pdb', 'csm')
+signature = signa.read('2lzm.pdb', 'csm')
 print(signature)
 
 #Para processar múltiplos arquivos PDB, use:
