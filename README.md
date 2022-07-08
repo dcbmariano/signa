@@ -64,3 +64,12 @@ signa.read_csv('lista.csv', 'csm-hp')
 - PSE
 - Contacts
 - E muito mais
+
+## Signa by Laboratório de Bioinformática e Sistemas
+Contributions by:
+- (Diego Mariano)[https://github.com/dcbmariano]
+- Eduardo Utsch Madureira Moreira
+- Frederico Chaves Carvalho
+- Lucas Moraes
+- Raquel Cardoso de Melo Minardi
+- and many others.
