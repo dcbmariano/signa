@@ -3,10 +3,7 @@
 # Quickstart
 <code>python example.py</code>
 
-# Signa Docs
-
-
-## EN
+## Signa Docs (EN)
 
 Welcome to Signa library source code.
 
@@ -44,7 +41,7 @@ signa.read_csv('lista.csv', 'csm-hp')
 - Contacts (in developing)
 - and many others
 
-## PT-BR
+## Signa Docs (PT-BR)
 Bem-vindo(a) ao código-fonte da biblioteca Signa.
 
 Signa reimplementa uma série de métodos para construção de assinaturas estruturais com base em trabalhos realizados por pesquisadores do Laboratório de Bioinformática e Sistemas do Departamento de Ciência da Computação da Universidade Federal de Minas Gerais. 
