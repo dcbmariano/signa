@@ -1,28 +1,18 @@
-# Signa
-
-**Quickstart:** 
+<img src="./docs/img/header.png">
+# Quickstart
 <code>python example.py</code>
 
-<img src="./docs/img/header.png">
-<img src="./docs/img/about.png">
-
 ## EN
+
 Welcome to Signa library source code.
 
 Signa reimplements a series of methods for building structural signatures based on work carried out by researchers at the Bioinformatics and Systems Laboratory of the Department of Computer Science at the <i>Universidade Federal de Minas Gerais</i>.
 
 Signa was developed using the Python language, which guarantees a simple and friendly syntax, in addition to high performance and a fast running time.
 
-### Signatures and methods available
-- CSM 
-- aCSM
-- CSM-HP
-- SSV
-- VTR (in developing)
-- Proteus (in developing)
-- PSE (in developing)
-- Contacts (in developing)
-- and many others
+### What does Signa do?
+<img src="./docs/img/about.png">
+
 
 ### Simple use:
 ~~~
@@ -35,6 +25,17 @@ print(signature)
 signa.read_csv('lista.csv', 'csm-hp')
 ~~~
 
+### Signatures and methods available
+- CSM 
+- aCSM
+- CSM-HP
+- SSV
+- VTR (in developing)
+- Proteus (in developing)
+- PSE (in developing)
+- Contacts (in developing)
+- and many others
+
 ## PT-BR
 Bem-vindo(a) ao código-fonte da biblioteca Signa.
 
@@ -42,6 +43,9 @@ Signa reimplementa uma série de métodos para construção de assinaturas estru
 
 Signa foi desenvolvido utilizando a linguagem Python, o que garante uma sintaxe simples e amigável, além de alta performance e um rápido tempo de execução.
 
+### Para que serve a biblioteca Signa?
+<img src="./docs/img/about.png">
+Signa converte a estrutura tridimensional de uma macromolécula em um vetor numérico usando diversos tipos de assinaturas estruturais.
 
 ### Como usar Signa em seus scripts Python?
 ~~~
@@ -65,6 +69,8 @@ signa.read_csv('lista.csv', 'csm-hp')
 - PSE (em desenvolvimento)
 - Contacts (em desenvolvimento)
 - E muito mais
+
+<hr>
 
 ## Signa by Laboratório de Bioinformática e Sistemas
 Contributions by:
