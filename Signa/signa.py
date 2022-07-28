@@ -5,7 +5,7 @@
 # Department of Computer Science - Universidade Federal de Minas Gerais.
 # License MIT - https://opensource.org/licenses/MIT
 # ----------------------------------------------------------------------------
-version = 'Signa v0.2'
+version = 'Signa v0.2.1'
 """
 # ----------------------------------------------------------------------------
   Signa library tool
@@ -132,9 +132,10 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=
     """
     if verbose:
         print('---------------------------------')
-        print('Running',signa_type)
+        print('Signature algorithm:',signa_type)
         print('CUTOFF:',cutoff_limit)
         print('STEP:', cutoff_step)
+        print('PDB:', pdbID)
         print('---------------------------------')
     # ------------------------------------------------------------------------
     # Definitions of Atom Types
@@ -229,6 +230,10 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=
         atom_name, coords, residues = read_pdb(pdbID, atom='CA', chain=chain)
     else:
         atom_name, coords, residues = read_pdb(pdbID, chain=chain)
+
+    if len(atom_name) == 0:
+        print('No match found.')
+        exit()
     #
     k = len(coords)
     resatom = np.array([residues[x]+atom_name[x] for x in range(k)])
