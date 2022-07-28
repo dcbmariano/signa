@@ -1,10 +1,21 @@
 import Signa.signa as signa
 
 #help(signa)  # for obtaining more details use this command
+print(signa.version)
 
 # Simple use
 signature = signa.read('./docs/examples/pdb_files/2lzm.pdb', 'csm')
 print(signature)
+
+# signature = signa.read('./docs/examples/pdb_files/2lzm.pdb', 'acsm')
+# print(signature)
+
+# signature = signa.read('./docs/examples/pdb_files/2lzm.pdb', 'acsm_hp')
+# print(signature)
+
+# signature = signa.read('./docs/examples/pdb_files/2lzm.pdb', 'acsm_all')
+# print(signature)
+
 
 # Multiple files
 # signa.read_csv(
