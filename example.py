@@ -1,4 +1,5 @@
-import Signa.signa as signa
+#import Signa.signa as signa
+from signa import signa  #instalação local do signa v0.2 => /opt/homebrew/lib/python3.9/site-packages/signa
 
 #help(signa)  # for obtaining more details use this command
 # print(signa.version)  # returns signa version
