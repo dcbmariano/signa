@@ -252,7 +252,7 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=
         cutoff_start = 0
         cutoff_end = cutoff_temp
 
-        if cutoff_end < 0:
+        if cutoff_end <= 0: # if cutoff_end < 0:  # correct bug include +1 column
             break
 
         # 0: CSM
