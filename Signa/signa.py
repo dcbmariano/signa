@@ -364,23 +364,43 @@ def read(pdbID, signa_type='csm', cutoff_limit = 30, cutoff_step = 0.2, output_c
     
 
 def labels(signa_type='acsm', cutoff_limit = 20, cutoff_step = 0.2, separator = ','):
-    ''' Return labels for acsm, acsm-hp, and acsm-all '''
+    ''' 
+    *   Return labels for acsm, acsm-hp, and acsm-all 
+    *   
+    *   acsm: returns 10.0-9.8, 9.8-9.6, ..., 0.2-0.0
+    *
+    *   acsm-hp: 'hydrophobic x hydrophobic', 'polar x polar', 'hydrophobic x polar'
+    *
+    *   acsm-all: [
+    *               'acceptor', 'donor', 'aromatic', 'hydrophobic', 
+    *               'negative', 'neutral', 'positive', 'sulfide'
+    *             ] 
+    *             # (all-versus-all: acc x don, acc x aro, ..., sul x sul)
+    * 
+    *   Example: signa.labels('acsm_all', 10, 0.2)
+    *   Returns: acceptor x acceptor (10.0-9.8),acceptor x donor (10.0-9.8) ...
+    *            positive x sulfide (0.2-0.0),sulfide x sulfide (0.2-0.0)
+    '''
 
     header = ''
     acsm_hp_classes = ['hydrophobic x hydrophobic', 'polar x polar', 'hydrophobic x polar']
     acsm_all_classes = ['acceptor', 'donor', 'aromatic', 'hydrophobic', 'negative', 'neutral', 'positive', 'sulfide']
 
-    for i in range(cutoff_limit, 0, cutoff_step):
-        end = i+cutoff_step
+
+    for i in range(cutoff_limit*100, 0, -1*int(cutoff_step*100)):
+
+        i = i/100 # min cutoff value = 0.01
+
+        end = round(i-cutoff_step,1)
         if signa_type == 'acsm':
-            header += i+'-'+end+separator
+            header += str(i)+'-'+str(end)+separator
         elif signa_type == 'acsm_hp' or signa_type == 'acsm-hp':
             for x in acsm_hp_classes:
-                header += x+' ('+i+'-'+end+')'+separator
+                header += str(x)+' ('+str(i)+'-'+str(end)+')'+separator
         elif signa_type == 'acsm_all' or signa_type == 'acsm-all': 
             for x in range(len(acsm_all_classes)):
                 for y in range(x,len(acsm_all_classes)):
-                    header += acsm_all_classes[x]+' x '+acsm_all_classes[y]+' ('+i+'-'+end+')'+separator
+                    header += acsm_all_classes[x]+' x '+acsm_all_classes[y]+' ('+str(i)+'-'+str(end)+')'+separator
 
     header = header[:-1] # remove the last separator ','
 
