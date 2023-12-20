@@ -1,11 +1,11 @@
 # ----------------------------------------------------------------------------
-# SIGNA | alpha
+# SIGNA | beta
 # ----------------------------------------------------------------------------
-# Copyright 2022 by Laboratory of Bioinformatics and Systems (UFMG, Brazil).
+# Copyright 2024 by Laboratory of Bioinformatics and Systems (UFMG, Brazil).
 # Department of Computer Science - Universidade Federal de Minas Gerais.
 # License MIT - https://opensource.org/licenses/MIT
 # ----------------------------------------------------------------------------
-version = 'Signa v0.3.2'
+version = 'Signa v0.4'
 """
 # ----------------------------------------------------------------------------
   Signa library tool
@@ -26,6 +26,8 @@ print(signature)
 signa.read_csv('lista.csv', 'acsm_hp')
 
 # signa_type supported: csm, acsm, csm_hp, csm_all
+
+# cumulative: True or False
 
 # ----------------------------------------------------------------------------
 """
@@ -59,7 +61,6 @@ def read_pdb(pdbID, atom='ALL', chain='ALL'):
             coords.append([float(line[31:38]),float(line[39:46]),float(line[47:54])])
             residues.append(line[17:20].strip())
             atom_name.append(line[13:16].strip())
-
     return atom_name, coords, residues
 
 def read_mmcif():
@@ -108,7 +109,7 @@ def read_csv(csv_file, signa_type = 'csm', output="output.csv",
     print('Success! Results saved in the file: '+output)
 
 
-def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=True, chain='ALL', verbose=True):
+def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=True, chain='ALL', verbose=True, cumulative=True, separator=','):
     """ aCSM Algorithm
     This function implements the aCSM algorithm. 
 
@@ -184,38 +185,20 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=
     # ------------------------------------------------------------------------
 
     atoms_class = {}
-    
-    for i in atoms_hydrophobic:
-        atoms_class[i] = 'Hydro'
-    
-    for i in atoms_positive:
-        atoms_class[i] = 'Pos'
-    
-    for i in atoms_negative:
-        atoms_class[i] = 'Neg'
-    
-    for i in atoms_acceptor:
-        atoms_class[i] = 'Acc'
-    
-    for i in atoms_donor:
-        atoms_class[i] = 'Don'
-    
-    for i in atoms_aromatic:
-        atoms_class[i] = 'Aro'
-    
-    for i in atoms_sulfur:
-        atoms_class[i] = 'Sul'
-    
 
+    for atoms, class_name in [  # create an acronymous
+        (atoms_hydrophobic, 'Hydro'),
+        (atoms_positive, 'Pos'),
+        (atoms_negative, 'Neg'),
+        (atoms_acceptor, 'Acc'),
+        (atoms_donor, 'Don'),
+        (atoms_aromatic, 'Aro'),
+        (atoms_sulfur, 'Sul')
+    ]:
+        atoms_class.update({atom: class_name for atom in atoms})
+    
     acsm_all = {
-        'Acc': 0,
-        'Aro': 1,
-        'Don': 2,
-        'Hydro': 3, 
-        'Neg': 4, 
-        'Neutral': 5, 
-        'Pos': 6,
-        'Sul': 7, 
+        'Acc': 0, 'Aro': 1, 'Don': 2, 'Hydro': 3, 'Neg': 4, 'Neutral': 5, 'Pos': 6, 'Sul': 7, 
     }
 
     pdbID = pdbID.rstrip()
@@ -243,13 +226,17 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=
     dist = distance.pdist(coords,metric='euclidean')
     dist = distance.squareform(dist)
     signa_keys = list(acsm_all.keys())
-    
+
     # ------------------------------------------------------------------------
     # 2 - distance distribution
     # ------------------------------------------------------------------------
     for cutoff_temp in np.round(np.arange(cutoff_limit, -cutoff_step, -cutoff_step), 5):
 
-        cutoff_start = 0
+        if cumulative:
+            cutoff_start = 0
+        else:
+            cutoff_start = cutoff_temp - cutoff_step
+        
         cutoff_end = cutoff_temp
 
         if cutoff_end <= 0: # if cutoff_end < 0:  # correct bug include +1 column
@@ -258,7 +245,7 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=
         # 0: CSM
         if signa_type == 0 or signa_type.lower() == 'acsm' or signa_type.lower() == 'csm':
             edge_count = int(((dist > cutoff_start) & (dist <= cutoff_end)).sum()/2)
-            sign += str(edge_count)+','
+            sign += str(edge_count)+separator
         
         # 1: CSM-HP
         elif signa_type == 1 or signa_type.lower() == 'acsm_hp':
@@ -269,64 +256,34 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=
             edge_count_pp = int(((dist_pp<=cutoff_end)&(dist_pp>cutoff_start)).sum()/2)
             dist_hp = dist[resh].T[np.invert(resh)]
             edge_count_hp = ((dist_hp<=cutoff_end)&(dist_hp>=cutoff_start)).sum()
-            sign += str(edge_count_hh)+','
-            sign += str(edge_count_pp)+','
-            sign += str(edge_count_hp)+','
+            sign += str(edge_count_hh)+separator
+            sign += str(edge_count_pp)+separator
+            sign += str(edge_count_hp)+separator
 
         # 2: aCSM
-        elif signa_type == 2 or signa_type.lower() == 'acsm_all':
+        elif signa_type == 2 or signa_type.lower() == 'acsm_all' or signa_type.lower() == 'acsm-all':
             for x in range(len(signa_keys)):
                 for y in range(x,len(signa_keys)):
                     dist_2 = dist[res_type==signa_keys[x]].T[res_type==signa_keys[y]]
                     if x == y:
-                        sign += str(int(((dist_2<=cutoff_end)&(dist_2>cutoff_start)).sum()/2))+','
+                        sign += str(int(((dist_2<=cutoff_end)&(dist_2>cutoff_start)).sum()/2))+separator
                     else:
-                        sign += str(((dist_2<=cutoff_end)&(dist_2>=cutoff_start)).sum())+','
+                        sign += str(((dist_2<=cutoff_end)&(dist_2>=cutoff_start)).sum())+separator
                         
-    if sign[-1]==',':
+    if sign[-1] == separator:
         sign = sign[:-1]
 
-    result = [int(s) for s in sign.split(',')]
+    result = [int(s) for s in sign.split(separator)]
 
     if output_csv:
         return sign
     else:
         return np.array(result)
 
-def capri():
-    """Implements Capri algorithm"""
-    pass
-
-
-def vtr():
-    """Implements VTR algorithm"""
-    pass
-
-
-def proteus():
-    """Implements Proteus algorithm"""
-    pass
-
-
-def pse():
-    """Implements Proteus Search Engine algorithm"""
-    pass
-
-
-def asmc():
-    """Implements ASMC algorithm
-
-    Please, cite:
-        de Melo-Minardi RC, Bastard K, Artiguenave F. Identification of 
-        subfamily-specific sites based on active sites modeling and 
-        clustering. Bioinformatics. 2010 Dec 15;26(24):3075-82. 
-        doi: 10.1093/bioinformatics/btq595.
-    """
-    pass
-
-
 def contacts():
-    """Implements contacts calculus"""
+    """Implements contacts calculus
+        Use: python Signa/plugins/contatos.py
+    """
     pass
 
 
@@ -352,22 +309,25 @@ def ssv(pdb1, pdb2, signa_type='acsm_all', cutoff_limit=10,
     return ssv[0]
 
 
-def read(pdbID, signa_type='csm', cutoff_limit = 30, cutoff_step = 0.2, output_csv = True, chain='ALL', verbose=True):
+def read(pdbID, signa_type='csm', cutoff_limit = 30, cutoff_step = 0.2, output_csv = True, chain='ALL', verbose=True, cumulative=True, separator=","):
     """Function read_pdb()
     This function aims to read ".pdb" files
 
     PT-BR: Adicionar opção de retornar mapas de distância, 
         mapas de átomos hidrofóbicos, mapas de átomos por tipo
     """
-
-    return csm(pdbID, signa_type, cutoff_limit, cutoff_step, output_csv, chain, verbose)
+    if signa_type.lower() == 'signa_charge' or signa_type.lower() == 'signa-charge':
+        return signa_charge(pdbID)
+    else:
+        return csm(pdbID, signa_type, cutoff_limit, cutoff_step, output_csv, chain, verbose, cumulative, separator)
     
 
-def labels(signa_type='acsm', cutoff_limit = 20, cutoff_step = 0.2, separator = ','):
+def labels(signa_type='acsm', cutoff_limit = 20, cutoff_step = 0.2, separator = ',', cumulative=True):
     ''' 
     *   Return labels for acsm, acsm-hp, and acsm-all 
     *   
-    *   acsm: returns 10.0-9.8, 9.8-9.6, ..., 0.2-0.0
+    *   acsm: if cumulative, returns 10.0-0, 9.8-0, ..., 0.2-0.0
+    *         else: returns 10.0-9.8, 9.8-9.6, ..., 0.2-0  
     *
     *   acsm-hp: 'hydrophobic x hydrophobic', 'polar x polar', 'hydrophobic x polar'
     *
@@ -391,7 +351,12 @@ def labels(signa_type='acsm', cutoff_limit = 20, cutoff_step = 0.2, separator = 
 
         i = i/100 # min cutoff value = 0.01
 
-        end = round(i-cutoff_step,1)
+        if cumulative:
+            end=0
+        else:
+            end = round(i-cutoff_step,1)
+        if signa_type == 'csm':
+            header += str(i)+'-'+str(end) + separator
         if signa_type == 'acsm':
             header += str(i)+'-'+str(end)+separator
         elif signa_type == 'acsm_hp' or signa_type == 'acsm-hp':
@@ -405,3 +370,85 @@ def labels(signa_type='acsm', cutoff_limit = 20, cutoff_step = 0.2, separator = 
     header = header[:-1] # remove the last separator ','
 
     return header
+
+
+def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=True):
+    """ Calculates de structural signature: SIGNA-CHARGE """
+
+    # forcefield values [0]=>AMBER [1] CHARMM | data obtained from nApoli
+    ff_values = {
+        "ALA:N": [-0.4157, -0.47], "ALA:CA": [0.0337, 0.07], "ALA:C": [0.5973, 0.51], "ALA:O": [-0.5679, -0.51], "ALA:CB": [-0.1825, -0.27], "ARG:N": [-0.3479, -0.47], "ARG:CA": [-0.2637, 0.07], "ARG:C": [0.7341, 0.51], "ARG:O": [-0.5894, -0.51], "ARG:CB": [-0.0007, -0.18], "ARG:CG": [0.039, -0.18], "ARG:CD": [0.0486, 0.2], "ARG:NE": [-0.5295, -0.7], "ARG:CZ": [0.8076, 0.64], "ARG:NH1": [-0.8627, -0.8], "ARG:NH2": [-0.8627, -0.8], "ASN:N": [-0.4157, -0.47], "ASN:CA": [0.0143, 0.07], "ASN:C": [0.5973, 0.51], "ASN:O": [-0.5679, -0.51], "ASN:CB": [-0.2041, -0.18], "ASN:CG": [0.713, 0.55], "ASN:OD1": [-0.5931, -0.55], "ASN:ND2": [-0.9191, -0.62], "ASP:N": [-0.5163, -0.47], "ASP:CA": [0.0381, 0.07], "ASP:C": [0.5366, 0.51], "ASP:O": [-0.5819, -0.51], "ASP:CB": [-0.0303, -0.28], "ASP:CG": [0.7994, 0.62], "ASP:OD1": [-0.8014, -0.76], "ASP:OD2": [-0.8014, -0.76], "CYS:N": [-0.4157, -0.47], "CYS:CA": [0.0213, 0.07], "CYS:C": [0.5973, 0.51], "CYS:O": [-0.5679, -0.51], "CYS:CB": [-0.1231, -0.11], "CYS:SG": [-0.3119, -0.23], "GLN:N": [-0.4157, -0.47], "GLN:CA": [-0.0031, 0.07], "GLN:C": [0.5973, 0.51], "GLN:O": [-0.5679, -0.51], "GLN:CB": [-0.0036, -0.18], "GLN:CG": [-0.0645, -0.18], "GLN:CD": [0.6951, 0.55], "GLN:OE1": [-0.6086, -0.55], "GLN:NE2": [-0.9407, -0.62], "GLU:N": [-0.5163, -0.47], "GLU:CA": [0.0397, 0.07], "GLU:C": [0.5366, 0.51], "GLU:O": [-0.5819, -0.51], "GLU:CB": [0.056, -0.18], "GLU:CG": [0.0136, -0.28], "GLU:CD": [0.8054, 0.62], "GLU:OE1": [-0.8188, -0.76], "GLU:OE2": [-0.8188, -0.76], "GLY:N": [-0.4157, -0.47], "GLY:CA": [-0.0252, -0.02], "GLY:C": [0.5973, 0.51], "GLY:O": [-0.5679, -0.51], "HIS:N": [-0.4157, -0.47], "HIS:CA": [0.0188, 0.07], "HIS:C": [0.5973, 0.51], "HIS:O": [-0.5679, -0.51], "HIS:CB": [-0.0462, -0.09], "HIS:CG": [-0.0266, -0.36], "HIS:ND1": [-0.3811, 0.32], "HIS:CD2": [0.1292, 0.22], "HIS:CE1": [0.2057, 0.25], "HIS:NE2": [-0.5727, -0.7], "ILE:N": [-0.4157, -0.47], "ILE:CA": [-0.0597, 0.07], "ILE:C": [0.5973, 0.51], "ILE:O": [-0.5679, -0.51], "ILE:CB": [0.1303, -0.09], "ILE:CG1": [-0.043, -0.18], "ILE:CG2": [-0.3204, -0.27], "ILE:CD1": [-0.066, -0.27], "LEU:N": [-0.4157, -0.47], "LEU:CA": [-0.0518, 0.07], "LEU:C": [0.5973, 0.51], "LEU:O": [-0.5679, -0.51], "LEU:CB": [-0.1102, -0.18], "LEU:CG": [0.3531, -0.09], "LEU:CD1": [-0.4121, -0.27], "LEU:CD2": [-0.4121, -0.27], "LYS:N": [-0.3479, -0.47], "LYS:CA": [-0.24, 0.07], "LYS:C": [0.7341, 0.51], "LYS:O": [-0.5894, -0.51], "LYS:CB": [-0.0094, -0.18], "LYS:CG": [0.0187, -0.18], "LYS:CD": [-0.0479, -0.18], "LYS:CE": [-0.0143, 0.21], "LYS:NZ": [-0.3854, -0.3], "MET:N": [-0.4157, -0.47], "MET:CA": [-0.0237, 0.07], "MET:C": [0.5973, 0.51], "MET:O": [-0.5679, -0.51], "MET:CB": [0.0342, -0.18], "MET:CG": [0.0018, -0.14], "MET:SD": [-0.2737, -0.09], "MET:CE": [-0.0536, -0.22], "PHE:N": [-0.4157, -0.47], "PHE:CA": [-0.0024, 0.07], "PHE:C": [0.5973, 0.51], "PHE:O": [-0.5679, -0.51], "PHE:CB": [-0.0343, -0.18], "PHE:CG": [0.0118, 0], "PHE:CD1": [-0.1256, -0.115], "PHE:CD2": [-0.1256, -0.115], "PHE:CE1": [-0.1704, -0.115], "PHE:CE2": [-0.1704, -0.115], "PHE:CZ": [-0.1072, -0.115], "PRO:N": [-0.2548, -0.29], "PRO:CA": [-0.0266, 0.09], "PRO:C": [0.5896, 0.51], "PRO:O": [-0.5748, -0.51], "PRO:CB": [-0.007, 0.09], "PRO:CG": [0.0189, 0.02], "PRO:CD": [0.0192, 0], "SER:N": [-0.4157, -0.47], "SER:CA": [-0.0249, 0.07], "SER:C": [0.5973, 0.51], "SER:O": [-0.5679, -0.51], "SER:CB": [0.2117, 0.05], "SER:OG": [-0.6546, -0.66], "THR:N": [-0.4157, -0.47], "THR:CA": [-0.0389, 0.07], "THR:C": [0.5973, 0.51], "THR:O": [-0.5679, -0.51], "THR:CB": [0.3654, 0.14], "THR:OG1": [-0.6761, 0.09], "THR:CG2": [-0.2438, -0.66], "TRP:N": [-0.4157, -0.47], "TRP:CA": [-0.0275, 0.07], "TRP:C": [0.5973, 0.51], "TRP:O": [-0.5679, -0.51], "TRP:CB": [-0.005, -0.18], "TRP:CG": [-0.1415, -0.03], "TRP:CD1": [-0.1638, -0.15], "TRP:CD2": [0.1243, 0.14], "TRP:NE1": [-0.3418, -0.51], "TRP:CE2": [0.138, 0.24], "TRP:CE3": [-0.2387, 0.16], "TRP:CZ2": [-0.1134, 0.17], "TRP:CZ3": [-0.1972, 0.14], "TRP:CH2": [-0.1134, 0.17], "TYR:N": [-0.4157, -0.47], "TYR:CA": [-0.0014, 0.07], "TYR:C": [0.5973, 0.51], "TYR:O": [-0.5679, -0.51], "TYR:CB": [-0.0152, -0.18], "TYR:CG": [-0.0011, 0], "TYR:CD1": [-0.1906, -0.115], "TYR:CD2": [-0.1906, -0.115], "TYR:CE1": [-0.2341, -0.115], "TYR:CE2": [-0.2341, -0.115], "TYR:CZ": [0.3226, 0.11], "TYR:OH": [-0.5579, -0.54], "VAL:N": [-0.4157, -0.47], "VAL:CA": [-0.0875, 0.07], "VAL:C": [0.5973, 0.51], "VAL:O": [-0.5679, -0.51], "VAL:CB": [0.2985, -0.09], "VAL:CG1": [-0.3192, -0.27], "VAL:CG2": [-0.3192, -0.27]
+    }
+
+    if forcefield == "AMBER":
+        ff_value = { i:j[0] for i,j in ff_values.items() }
+    elif forcefield == "CHARMM":
+        ff_value = { i:j[1] for i,j in ff_values.items() }
+
+    # Step 1 - distance matrix
+    atom_name, coords, residues = read_pdb(pdbID, chain=chain)
+
+    if len(atom_name) == 0:
+        print('No match found.')
+        exit()
+        
+    k = len(coords)
+    resatom = np.array([residues[x]+":"+atom_name[x] for x in range(k)])
+    coords = np.array(coords)
+    dist = distance.pdist(coords,metric='euclidean')
+    dist = distance.squareform(dist)  # distance matrix
+
+    # charge difference matrix ------------------------------------------------
+    cdm = []
+
+    ci = 0 # aux counters
+    for i in resatom:
+        cdm.append([]) # append an empty array
+        cj = 0 # aux counters
+        for j in resatom:
+            cdm[ci].append(-1)  # initial value
+            try: # returns the module of the difference => dc = |c2 - c1|
+                cdm[ci][cj] = abs(round(ff_value[j] - ff_value[i],2))
+            except:
+                cdm[ci][cj] = 0  # if the atom charge wasn't found, difference = 0
+            cj+=1
+        ci+=1
+
+    cdm = np.array(cdm)
+    
+    # charge difference distribution based on atoms distances ------------------
+    dmax = 30
+    dmin = 0
+    dstp = 0.2
+    sign = ''
+    #np.set_printoptions(threshold=np.inf) # limit print np array
+    
+    cont = [0]*8  # counting the number of atom pairs
+
+    for dist2 in np.arange(dmin+dstp, dmax+dstp, dstp):
+        dist1 = dist2 - dstp
+
+        for i in range(len(cdm)):
+            for j in range(len(cdm)):
+
+                if j <= i:  # remove diagonal
+                    continue 
+
+                # criterium 1: dist must be lower
+                if dist[i][j] <= dist2 and dist[i][j] > dist1:
+
+                    # for charge difference - from 0 until 2
+                    for ct in range(len(cont)):
+                        charge_min = 0.25*ct # divide into 8 charge clusters
+                        charge_max = charge_min + 0.25
+
+                        if cdm[i][j] > charge_min and cdm[i][j] <= charge_max:
+                            cont[ct]+=1
+                    
+        for ct in cont:
+            sign+=str(ct)+separator
+        #print('parcial',sign)
+
+    sign = sign[:-1]
+
+    return sign
