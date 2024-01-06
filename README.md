@@ -20,10 +20,15 @@ Requirements:
 
 
 ### Simple use:
+
+Clone the repository using the command-line terminal, GitHub Desktop, or click the <code>Code > Download ZIP</code> button. Next, install the library and then import signa into your Python script (we do not provide support for the installation process).
+
+However, the **fastest way to test Signa** is to copy the <code>signa.py</code> file (it is inside the Signa folder) to the same directory as your PDB files (to test, copy the file <code>2lzm.pdb<c/ode> inside <code>docs/examples</code> to the same directory). Then create a python file in the same directory and add the following command:
+
 ~~~
 import signa
 
-signature = signa.read('2lzm.pdb', 'csm')
+signature = signa.read('2lzm.pdb', 'signa-charge')
 print(signature)
 
 #Dealing with several PDB files
@@ -77,10 +82,16 @@ Requisitos:
 Signa converte a estrutura tridimensional de uma macromolécula em um vetor numérico usando diversos tipos de assinaturas estruturais.
 
 ### Como usar Signa em seus scripts Python?
+
+Clone o repositório usando o terminal de linhas de comando, GitHub Desktop ou clique no botão <code>Code > Download ZIP</code>. Em seguida, faça a instalação da biblioteca e depois importe signa para seu script Python (não fornecemos suporte para o processo de instalação). 
+
+Entretanto, a maneira **mais rápida de testar Signa** é copiando o arquivo <code>signa.py</code> (ele está dentro da pasta Signa) para o mesmo diretório dos seus arquivos PDB (para testar, copie o arquivo <code>2lzm.pdb<c/ode> dentro de <code>docs/examples</code> para o mesmo diretório). Em seguida, crie um arquivo python no mesmo diretório e adicione o comando a seguir:
+
 ~~~
 import signa
 
-signature = signa.read('2lzm.pdb', 'signa-charge')
+entry = '2lzm.pdb'
+signature = signa.read(entry, 'signa-charge')
 print(signature)
 
 #Para processar múltiplos arquivos PDB, use:
