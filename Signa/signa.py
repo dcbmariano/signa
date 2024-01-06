@@ -1,14 +1,14 @@
-# ----------------------------------------------------------------------------
-# SIGNA | beta
-# ----------------------------------------------------------------------------
-# Copyright 2024 by Laboratory of Bioinformatics and Systems (UFMG, Brazil).
-# Department of Computer Science - Universidade Federal de Minas Gerais.
+# -----------------------------------------------------------------------------
+# SIGNA | stable
+# -----------------------------------------------------------------------------
+# Copyright 2024 by Laboratory of Bioinformatics and Systems | Diego Mariano
+# Department of Computer Science: Universidade Federal de Minas Gerais, Brazil
 # License MIT - https://opensource.org/licenses/MIT
-# ----------------------------------------------------------------------------
-version = 'Signa v0.4'
+# -----------------------------------------------------------------------------
+version = 'Signa v1.0'
 """
 # ----------------------------------------------------------------------------
-  Signa library tool
+  Signa library 
 # ----------------------------------------------------------------------------
 
 Script: signa.py
@@ -17,16 +17,15 @@ Requirements: numpy / scipy
 
 # Simple use:
 
-import signa
+import Signa.signa as signa
 
-signature = open('2lzm.pdb', 'csm')
+signature = signa.read('2lzm.pdb', 'SIGNA-CHARGE')
 print(signature)
 
-# Dealing with several PDB files
+# Dealing with multiple PDB files
 signa.read_csv('lista.csv', 'acsm_hp')
 
-# signa_type supported: csm, acsm, csm_hp, csm_all
-
+# signa_type supported: signa_charge, csm, acsm, csm_hp, csm_all
 # cumulative: True or False
 
 # ----------------------------------------------------------------------------
@@ -61,6 +60,7 @@ def read_pdb(pdbID, atom='ALL', chain='ALL'):
             coords.append([float(line[31:38]),float(line[39:46]),float(line[47:54])])
             residues.append(line[17:20].strip())
             atom_name.append(line[13:16].strip())
+
     return atom_name, coords, residues
 
 def read_mmcif():
@@ -68,7 +68,7 @@ def read_mmcif():
 
 
 def read_csv(csv_file, signa_type = 'csm', output="output.csv", 
-    cutoff_limit=30, cutoff_step=0.2, output_csv=True, verbose=True, chain='ALL'):
+    cutoff_limit=30, cutoff_step=0.2, output_csv=True, verbose=True, chain='ALL', forcefield='AMBER', separator=',', cumulative=True):
     """Read several PDB files
         This function receives a list of PDB files and ]
             returns a CSV with signatures
@@ -86,6 +86,7 @@ def read_csv(csv_file, signa_type = 'csm', output="output.csv",
     i = 'pdb_tmp'
 
     with open(csv_file) as arquivo:
+        
         linhas = arquivo.readlines()
         cont = 0
         for linha in linhas:
@@ -95,10 +96,9 @@ def read_csv(csv_file, signa_type = 'csm', output="output.csv",
 
             i = linha.strip()
 
-            signature = read(i, signa_type, cutoff_limit, 
-                cutoff_step, output_csv)
+            signature = read(i, signa_type, cutoff_limit, cutoff_step, output_csv, chain, verbose, cumulative, separator, forcefield)
 
-            w.write(i+",")
+            w.write(i+separator)
             w.write(signature)
             cont+=1
             if verbose:
@@ -282,7 +282,7 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=
 
 def contacts():
     """Implements contacts calculus
-        Use: python Signa/plugins/contatos.py
+        Use: python Signa/plugins/contacts.py
     """
     pass
 
@@ -309,7 +309,7 @@ def ssv(pdb1, pdb2, signa_type='acsm_all', cutoff_limit=10,
     return ssv[0]
 
 
-def read(pdbID, signa_type='csm', cutoff_limit = 30, cutoff_step = 0.2, output_csv = True, chain='ALL', verbose=True, cumulative=True, separator=","):
+def read(pdbID, signa_type='csm', cutoff_limit = 30, cutoff_step = 0.2, output_csv = True, chain='ALL', verbose=True, cumulative=True, separator=",", forcefield='AMBER'):
     """Function read_pdb()
     This function aims to read ".pdb" files
 
@@ -317,7 +317,7 @@ def read(pdbID, signa_type='csm', cutoff_limit = 30, cutoff_step = 0.2, output_c
         mapas de átomos hidrofóbicos, mapas de átomos por tipo
     """
     if signa_type.lower() == 'signa_charge' or signa_type.lower() == 'signa-charge':
-        return signa_charge(pdbID)
+        return signa_charge(pdbID, forcefield, chain, separator, verbose, cutoff_limit, cutoff_step, cumulative)
     else:
         return csm(pdbID, signa_type, cutoff_limit, cutoff_step, output_csv, chain, verbose, cumulative, separator)
     
@@ -372,7 +372,7 @@ def labels(signa_type='acsm', cutoff_limit = 20, cutoff_step = 0.2, separator = 
     return header
 
 
-def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=True):
+def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=True, cutoff_limit=30, cutoff_step=0.2, cumulative=True):
     """ Calculates de structural signature: SIGNA-CHARGE """
 
     # forcefield values [0]=>AMBER [1] CHARMM | data obtained from nApoli
@@ -380,12 +380,12 @@ def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=
         "ALA:N": [-0.4157, -0.47], "ALA:CA": [0.0337, 0.07], "ALA:C": [0.5973, 0.51], "ALA:O": [-0.5679, -0.51], "ALA:CB": [-0.1825, -0.27], "ARG:N": [-0.3479, -0.47], "ARG:CA": [-0.2637, 0.07], "ARG:C": [0.7341, 0.51], "ARG:O": [-0.5894, -0.51], "ARG:CB": [-0.0007, -0.18], "ARG:CG": [0.039, -0.18], "ARG:CD": [0.0486, 0.2], "ARG:NE": [-0.5295, -0.7], "ARG:CZ": [0.8076, 0.64], "ARG:NH1": [-0.8627, -0.8], "ARG:NH2": [-0.8627, -0.8], "ASN:N": [-0.4157, -0.47], "ASN:CA": [0.0143, 0.07], "ASN:C": [0.5973, 0.51], "ASN:O": [-0.5679, -0.51], "ASN:CB": [-0.2041, -0.18], "ASN:CG": [0.713, 0.55], "ASN:OD1": [-0.5931, -0.55], "ASN:ND2": [-0.9191, -0.62], "ASP:N": [-0.5163, -0.47], "ASP:CA": [0.0381, 0.07], "ASP:C": [0.5366, 0.51], "ASP:O": [-0.5819, -0.51], "ASP:CB": [-0.0303, -0.28], "ASP:CG": [0.7994, 0.62], "ASP:OD1": [-0.8014, -0.76], "ASP:OD2": [-0.8014, -0.76], "CYS:N": [-0.4157, -0.47], "CYS:CA": [0.0213, 0.07], "CYS:C": [0.5973, 0.51], "CYS:O": [-0.5679, -0.51], "CYS:CB": [-0.1231, -0.11], "CYS:SG": [-0.3119, -0.23], "GLN:N": [-0.4157, -0.47], "GLN:CA": [-0.0031, 0.07], "GLN:C": [0.5973, 0.51], "GLN:O": [-0.5679, -0.51], "GLN:CB": [-0.0036, -0.18], "GLN:CG": [-0.0645, -0.18], "GLN:CD": [0.6951, 0.55], "GLN:OE1": [-0.6086, -0.55], "GLN:NE2": [-0.9407, -0.62], "GLU:N": [-0.5163, -0.47], "GLU:CA": [0.0397, 0.07], "GLU:C": [0.5366, 0.51], "GLU:O": [-0.5819, -0.51], "GLU:CB": [0.056, -0.18], "GLU:CG": [0.0136, -0.28], "GLU:CD": [0.8054, 0.62], "GLU:OE1": [-0.8188, -0.76], "GLU:OE2": [-0.8188, -0.76], "GLY:N": [-0.4157, -0.47], "GLY:CA": [-0.0252, -0.02], "GLY:C": [0.5973, 0.51], "GLY:O": [-0.5679, -0.51], "HIS:N": [-0.4157, -0.47], "HIS:CA": [0.0188, 0.07], "HIS:C": [0.5973, 0.51], "HIS:O": [-0.5679, -0.51], "HIS:CB": [-0.0462, -0.09], "HIS:CG": [-0.0266, -0.36], "HIS:ND1": [-0.3811, 0.32], "HIS:CD2": [0.1292, 0.22], "HIS:CE1": [0.2057, 0.25], "HIS:NE2": [-0.5727, -0.7], "ILE:N": [-0.4157, -0.47], "ILE:CA": [-0.0597, 0.07], "ILE:C": [0.5973, 0.51], "ILE:O": [-0.5679, -0.51], "ILE:CB": [0.1303, -0.09], "ILE:CG1": [-0.043, -0.18], "ILE:CG2": [-0.3204, -0.27], "ILE:CD1": [-0.066, -0.27], "LEU:N": [-0.4157, -0.47], "LEU:CA": [-0.0518, 0.07], "LEU:C": [0.5973, 0.51], "LEU:O": [-0.5679, -0.51], "LEU:CB": [-0.1102, -0.18], "LEU:CG": [0.3531, -0.09], "LEU:CD1": [-0.4121, -0.27], "LEU:CD2": [-0.4121, -0.27], "LYS:N": [-0.3479, -0.47], "LYS:CA": [-0.24, 0.07], "LYS:C": [0.7341, 0.51], "LYS:O": [-0.5894, -0.51], "LYS:CB": [-0.0094, -0.18], "LYS:CG": [0.0187, -0.18], "LYS:CD": [-0.0479, -0.18], "LYS:CE": [-0.0143, 0.21], "LYS:NZ": [-0.3854, -0.3], "MET:N": [-0.4157, -0.47], "MET:CA": [-0.0237, 0.07], "MET:C": [0.5973, 0.51], "MET:O": [-0.5679, -0.51], "MET:CB": [0.0342, -0.18], "MET:CG": [0.0018, -0.14], "MET:SD": [-0.2737, -0.09], "MET:CE": [-0.0536, -0.22], "PHE:N": [-0.4157, -0.47], "PHE:CA": [-0.0024, 0.07], "PHE:C": [0.5973, 0.51], "PHE:O": [-0.5679, -0.51], "PHE:CB": [-0.0343, -0.18], "PHE:CG": [0.0118, 0], "PHE:CD1": [-0.1256, -0.115], "PHE:CD2": [-0.1256, -0.115], "PHE:CE1": [-0.1704, -0.115], "PHE:CE2": [-0.1704, -0.115], "PHE:CZ": [-0.1072, -0.115], "PRO:N": [-0.2548, -0.29], "PRO:CA": [-0.0266, 0.09], "PRO:C": [0.5896, 0.51], "PRO:O": [-0.5748, -0.51], "PRO:CB": [-0.007, 0.09], "PRO:CG": [0.0189, 0.02], "PRO:CD": [0.0192, 0], "SER:N": [-0.4157, -0.47], "SER:CA": [-0.0249, 0.07], "SER:C": [0.5973, 0.51], "SER:O": [-0.5679, -0.51], "SER:CB": [0.2117, 0.05], "SER:OG": [-0.6546, -0.66], "THR:N": [-0.4157, -0.47], "THR:CA": [-0.0389, 0.07], "THR:C": [0.5973, 0.51], "THR:O": [-0.5679, -0.51], "THR:CB": [0.3654, 0.14], "THR:OG1": [-0.6761, 0.09], "THR:CG2": [-0.2438, -0.66], "TRP:N": [-0.4157, -0.47], "TRP:CA": [-0.0275, 0.07], "TRP:C": [0.5973, 0.51], "TRP:O": [-0.5679, -0.51], "TRP:CB": [-0.005, -0.18], "TRP:CG": [-0.1415, -0.03], "TRP:CD1": [-0.1638, -0.15], "TRP:CD2": [0.1243, 0.14], "TRP:NE1": [-0.3418, -0.51], "TRP:CE2": [0.138, 0.24], "TRP:CE3": [-0.2387, 0.16], "TRP:CZ2": [-0.1134, 0.17], "TRP:CZ3": [-0.1972, 0.14], "TRP:CH2": [-0.1134, 0.17], "TYR:N": [-0.4157, -0.47], "TYR:CA": [-0.0014, 0.07], "TYR:C": [0.5973, 0.51], "TYR:O": [-0.5679, -0.51], "TYR:CB": [-0.0152, -0.18], "TYR:CG": [-0.0011, 0], "TYR:CD1": [-0.1906, -0.115], "TYR:CD2": [-0.1906, -0.115], "TYR:CE1": [-0.2341, -0.115], "TYR:CE2": [-0.2341, -0.115], "TYR:CZ": [0.3226, 0.11], "TYR:OH": [-0.5579, -0.54], "VAL:N": [-0.4157, -0.47], "VAL:CA": [-0.0875, 0.07], "VAL:C": [0.5973, 0.51], "VAL:O": [-0.5679, -0.51], "VAL:CB": [0.2985, -0.09], "VAL:CG1": [-0.3192, -0.27], "VAL:CG2": [-0.3192, -0.27]
     }
 
-    if forcefield == "AMBER":
+    if forcefield.upper() == "AMBER":
         ff_value = { i:j[0] for i,j in ff_values.items() }
-    elif forcefield == "CHARMM":
+    elif forcefield.upper() == "CHARMM":
         ff_value = { i:j[1] for i,j in ff_values.items() }
 
-    # Step 1 - distance matrix
+    # Step 1 - dist | distance matrix -----------------------------------------
     atom_name, coords, residues = read_pdb(pdbID, chain=chain)
 
     if len(atom_name) == 0:
@@ -398,7 +398,7 @@ def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=
     dist = distance.pdist(coords,metric='euclidean')
     dist = distance.squareform(dist)  # distance matrix
 
-    # charge difference matrix ------------------------------------------------
+    # Step 2 - cdm | charge difference matrix ---------------------------------
     cdm = []
 
     ci = 0 # aux counters
@@ -415,40 +415,53 @@ def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=
         ci+=1
 
     cdm = np.array(cdm)
-    
-    # charge difference distribution based on atoms distances ------------------
-    dmax = 30
-    dmin = 0
-    dstp = 0.2
-    sign = ''
     #np.set_printoptions(threshold=np.inf) # limit print np array
-    
-    cont = [0]*8  # counting the number of atom pairs
 
-    for dist2 in np.arange(dmin+dstp, dmax+dstp, dstp):
-        dist1 = dist2 - dstp
+    # Step 3 - charge difference distribution based on atoms distances --------
+    dmax = cutoff_limit; dmin = 0; dstp = cutoff_step  # distance cutoff
+    cmax = 2; cmin = 0; cstp = 0.25  # charge cutoff: 8 groups
 
-        for i in range(len(cdm)):
-            for j in range(len(cdm)):
+    cont = []  # counting the number of atom pairs
 
-                if j <= i:  # remove diagonal
-                    continue 
+    #dist => distance matrix / cdm => charge difference matrix
+    for d in np.arange(dmin + dstp, dmax + dstp, dstp):
+        for e in np.arange(cmin + cstp, cmax + cstp, cstp):
+            if cumulative:
+                c = (dist <= d) & (cdm < e) & (cdm >= e-cstp)
+            else:
+                c = (dist <= d) & (dist > d-dstp) & (cdm < e) & (cdm >= e-cstp)
 
-                # criterium 1: dist must be lower
-                if dist[i][j] <= dist2 and dist[i][j] > dist1:
+            cont.append(int(c.sum()/2)) # este código não remove o átomo-referência da contagem
 
-                    # for charge difference - from 0 until 2
-                    for ct in range(len(cont)):
-                        charge_min = 0.25*ct # divide into 8 charge clusters
-                        charge_max = charge_min + 0.25
+    sign = ''
+    for c in cont:
+        sign+=str(c)+separator
 
-                        if cdm[i][j] > charge_min and cdm[i][j] <= charge_max:
-                            cont[ct]+=1
+    # bloco lento -------------------------------------------------------------
+    # for dist2 in np.arange(dmin+dstp, dmax+dstp, dstp):
+    #     dist1 = dist2 - dstp
+
+    #     for i in range(len(cdm)):
+    #         for j in range(len(cdm)):
+
+    #             if j <= i:  # remove diagonal
+    #                 continue 
+
+    #             # criterium 1: dist must be lower
+    #             if dist[i][j] <= dist2 and dist[i][j] > dist1:
+
+    #                 # for charge difference - from 0 until 2
+    #                 for ct in range(len(cont)):
+    #                     charge_min = 0.25*ct # divide into 8 charge clusters
+    #                     charge_max = charge_min + 0.25
+
+    #                     if cdm[i][j] > charge_min and cdm[i][j] <= charge_max:
+    #                         cont[ct]+=1
                     
-        for ct in cont:
-            sign+=str(ct)+separator
-        #print('parcial',sign)
+    #     for ct in cont:
+    #         sign+=str(ct)+separator
+    # FIM bloco lento -----------------------------------------------------------
 
-    sign = sign[:-1]
+    sign = sign[:-1] # structural signature
 
     return sign
