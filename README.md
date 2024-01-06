@@ -3,6 +3,10 @@
 # Quickstart
 <code>python quickstart.py</code>
 
+## DOCS
+- <a href="#signa-docs-en">Documentation in English</a>
+- <a href="#signa-docs-pt-br">Documentação em Português (PT-BR)</a>
+
 ## Signa Docs (EN)
 
 Welcome to Signa library source code.
