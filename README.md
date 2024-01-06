@@ -30,9 +30,32 @@ import signa
 
 signature = signa.read('2lzm.pdb', 'signa-charge')
 print(signature)
+~~~
 
-#Dealing with several PDB files
-signa.read_csv('lista.csv', 'csm-hp')
+The signa.read() function accepts the following parameters:
+
+~~~
+def read(
+     pdbID,             # address and name of the input PDB file
+     signa_type='csm',  # signature type, can be: signa-charge, csm, acsm, acsm-all, acsm-hp
+     cutoff_limit = 30, # maximum search limit radius
+     cutoff_step = 0.2, # value of the search interval
+     output_csv = True, # saves the result as a csv file
+     chain='ALL',       # filters the chain from the pdb file
+     verbose=True,      # displays messages on the screen while the program runs
+     cumulative=True,   # cumulative or non-cumulative signatures
+     separator=","",    # output file separator
+     forcefield='AMBER' # forcefield used in signa-charge
+)
+~~~
+
+To handle multiple files, add the PDB file names into a CSV file (one per line). Then use the following command:
+
+~~~
+import signa
+
+#To process multiple PDB files, use:
+signa.read_csv('lista.csv', 'signa-charge')
 ~~~
 
 ### How to calculate contacts?
@@ -85,7 +108,7 @@ Signa converte a estrutura tridimensional de uma macromolécula em um vetor num�
 
 Clone o repositório usando o terminal de linhas de comando, GitHub Desktop ou clique no botão <code>Code > Download ZIP</code>. Em seguida, faça a instalação da biblioteca e depois importe signa para seu script Python (não fornecemos suporte para o processo de instalação). 
 
-Entretanto, a maneira **mais rápida de testar Signa** é copiando o arquivo <code>signa.py</code> (ele está dentro da pasta Signa) para o mesmo diretório dos seus arquivos PDB (para testar, copie o arquivo <code>2lzm.pdb<c/ode> dentro de <code>docs/examples</code> para o mesmo diretório). Em seguida, crie um arquivo python no mesmo diretório e adicione o comando a seguir:
+Entretanto, a maneira **mais rápida de testar Signa** é copiando o arquivo <code>signa.py</code> (ele está dentro da pasta Signa) para o mesmo diretório dos seus arquivos PDB (para testar, copie o arquivo <code>2lzm.pdb</code> dentro de <code>docs/examples</code> para o mesmo diretório). Em seguida, crie um arquivo python no mesmo diretório e adicione o comando a seguir:
 
 ~~~
 import signa
@@ -93,6 +116,29 @@ import signa
 entry = '2lzm.pdb'
 signature = signa.read(entry, 'signa-charge')
 print(signature)
+~~~
+
+A função signa.read() aceita os seguintes parâmetros:
+
+~~~
+def read(
+    pdbID,                  # endereço e nome do arquivo PDB de entrada
+    signa_type='csm',       # tipo de assinatura, pode ser: signa-charge, csm, acsm, acsm-all, acsm-hp
+    cutoff_limit = 30,      # raio máximo de limite de busca
+    cutoff_step = 0.2,      # valor do intervalo de busca
+    output_csv = True,      # salva o resultado como um arquivo csv
+    chain='ALL',            # filtra a cadeia do arquivo pdb 
+    verbose=True,           # exibe mensagens na tela enquanto o programa roda
+    cumulative=True,        # assinaturas cumulativas ou não cumulativas
+    separator=",",          # separador do arquivo de saída
+    forcefield='AMBER'      # campo de força usado em signa-charge
+)
+~~~
+
+Para lidar com múltiplos arquivos, adicione os nomes dos arquivos PDB em um arquivo CSV (um por linha). Em seguida, use o seguinte comando:
+
+~~~
+import signa
 
 #Para processar múltiplos arquivos PDB, use:
 signa.read_csv('lista.csv', 'signa-charge')
