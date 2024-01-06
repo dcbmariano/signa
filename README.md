@@ -23,7 +23,7 @@ Requirements:
 
 Clone the repository using the command-line terminal, GitHub Desktop, or click the <code>Code > Download ZIP</code> button. Next, install the library and then import signa into your Python script (we do not provide support for the installation process).
 
-However, the **fastest way to test Signa** is to copy the <code>signa.py</code> file (it is inside the Signa folder) to the same directory as your PDB files (to test, copy the file <code>2lzm.pdb<c/ode> inside <code>docs/examples</code> to the same directory). Then create a python file in the same directory and add the following command:
+However, the **fastest way to test Signa** is to copy the <code>signa.py</code> file (it is inside the Signa folder) to the same directory as your PDB files (to test, copy the file <code>2lzm.pdb</code> inside <code>docs/examples</code> to the same directory). Then create a python file in the same directory and add the following command:
 
 ~~~
 import signa
