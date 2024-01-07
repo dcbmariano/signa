@@ -39,17 +39,17 @@ print(signature)
 The signa.read() function accepts the following parameters:
 
 ~~~
-def read(
-     pdbID,             # address and name of the input PDB file
-     signa_type='csm',  # signature type, can be: signa-charge, csm, acsm, acsm-all, acsm-hp
-     cutoff_limit = 30, # maximum search limit radius
-     cutoff_step = 0.2, # value of the search interval
-     output_csv = True, # saves the result as a csv file
-     chain='ALL',       # filters the chain from the pdb file
-     verbose=True,      # displays messages on the screen while the program runs
-     cumulative=True,   # cumulative or non-cumulative signatures
-     separator=","",    # output file separator
-     forcefield='AMBER' # forcefield used in signa-charge
+read(
+    pdbID,             # address and name of the input PDB file
+    signa_type='csm',  # signature type, can be: signa-charge, csm, acsm, acsm-all, acsm-hp
+    cutoff_limit = 30, # maximum search limit radius
+    cutoff_step = 0.2, # value of the search interval
+    output_csv = True, # saves the result as a csv file
+    chain='ALL',       # filters the chain from the pdb file
+    verbose=True,      # displays messages on the screen while the program runs
+    cumulative=True,   # cumulative or non-cumulative signatures
+    separator=",",     # output file separator
+    forcefield='AMBER' # forcefield used in signa-charge
 )
 ~~~
 
@@ -125,7 +125,7 @@ print(signature)
 A função signa.read() aceita os seguintes parâmetros:
 
 ~~~
-def read(
+read(
     pdbID,                  # endereço e nome do arquivo PDB de entrada
     signa_type='csm',       # tipo de assinatura, pode ser: signa-charge, csm, acsm, acsm-all, acsm-hp
     cutoff_limit = 30,      # raio máximo de limite de busca
