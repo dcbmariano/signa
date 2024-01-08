@@ -8,10 +8,10 @@ entry = './docs/examples/as.pdb'
 signature = ''
 
 # Simple use
-#signature = signa.read(entry, 'acsm', cutoff_limit=30, cutoff_step=0.2, separator=",", cumulative=True)
+signature = signa.read(entry, 'acsm-all', cutoff_limit=12, cutoff_step=0.2, separator=",", cumulative=True)
 
 # SIGNA-CHARGE
-signature = signa.read(entry, signa_type='SIGNA-CHARGE', forcefield="AMBER", cutoff_limit=12, cutoff_step=1.0, cumulative=False)
+#signature = signa.read(entry, signa_type='SIGNA-CHARGE', forcefield="AMBER", cutoff_limit=12, cutoff_step=1.0, cumulative=False)
 
 # signature = signa.read(entry, 'csm', cutoff_limit=30, cutoff_step=0.2, separator=",", cumulative=True)
 
