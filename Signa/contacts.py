@@ -17,7 +17,7 @@ Date: 2024
 show_contacts = {
 
 	'ligacao_hidrogenio': True,  # hydrogen bonds  - set True or False
-	'hidrofobico': True,         # hydrophobic     - set True or False
+	'hidrofobico': False,        # hydrophobic     - set True or False
 	'aromatico': True,           # aromatic        - set True or False
 	'repulsivo': True,           # repulsive       - set True or False
 	'atrativo': True,            # attractive      - set True or False
@@ -40,20 +40,22 @@ try:
 		for i in range(len(sys.argv)):
 			if sys.argv[i] == "-hb":
 				show_contacts["ligacao_hidrogenio"] = True
-			elif sys.argv[i] == "-hy":
+			if sys.argv[i] == "-hy":
 				show_contacts["hidrofobico"] = True
-			elif sys.argv[i] == "-ar":
+			if sys.argv[i] == "-ar":
 				show_contacts["aromatico"] = True
-			elif sys.argv[i] == "-re":
+			if sys.argv[i] == "-re":
 				show_contacts["repulsivo"] = True
-			elif sys.argv[i] == "-at":
+			if sys.argv[i] == "-at":
 				show_contacts["atrativo"] = True
-			elif sys.argv[i] == "-sb":
+			if sys.argv[i] == "-sb":
 				show_contacts["ponte_salina"] = True
-			elif sys.argv[i] == "-db":
+			if sys.argv[i] == "-db":
 				show_contacts["ponte_dissulfeto"] = True
-			elif sys.argv[i] == "-csv":
+			if sys.argv[i] == "-csv":
 				saida = 'csv'
+				for i in show_contacts: # csv salva tudo 
+					show_contacts[i] = True
 
 except:
 	entrada = "../docs/examples/2lzm.pdb"
@@ -76,6 +78,7 @@ atractive = (2, 6)
 salt_bridge = (0, 3.9)
 disulfide_bond = (0, 2.8)
 
+three_to_one = { "ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLN": "Q", "GLU": "E", "GLY": "G", "HIS": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": "V" } 
 
 # REGRAS - RULES
 # 1 - deve ser feito por átomos de resíduos diferentes (must be made by different residue atoms)
@@ -195,7 +198,7 @@ for i in matriz_distancia:
 					try:
 						if contatos[r1_name][0] == 1 and contatos[r2_name][0] == 1:
 							if saida == 'tela':
-								print('HIDROFÓBICO|HYDROPHOBIC', i, j, matriz_distancia[i][j], sep=';')
+								print('HY', i, j, matriz_distancia[i][j], sep=';')
 							else:
 								w.write("HY;"+i+";"+j+";"+str(matriz_distancia[i][j])+"\n")
 					except:
@@ -208,7 +211,7 @@ for i in matriz_distancia:
 					try:
 						if contatos[r1_name][1] == 1 and contatos[r2_name][1] == 1:
 							if saida == 'tela':
-								print('AROMÁTICO|AROMATIC', i, j, matriz_distancia[i][j], sep=';')
+								print('AR', i, j, matriz_distancia[i][j], sep=';')
 							else:
 								w.write("AR;"+i+";"+j+";"+str(matriz_distancia[i][j])+"\n")
 					except:
@@ -224,7 +227,7 @@ for i in matriz_distancia:
 							(contatos[r1_name][3] == 1 and contatos[r2_name][3] == 1)    # negativo vs. negativo
 						):
 							if saida == 'tela':
-								print('REPULSIVO|REPULSIVE', i, j, matriz_distancia[i][j], sep=';')
+								print('RE', i, j, matriz_distancia[i][j], sep=';')
 							else:
 								w.write("RE;"+i+";"+j+";"+str(matriz_distancia[i][j])+"\n")
 					except:
@@ -240,7 +243,7 @@ for i in matriz_distancia:
 							(contatos[r1_name][3] == 1 and contatos[r2_name][2] == 1)    # negativo vs. positivo
 						):
 							if saida == 'tela':
-								print('ATRATIVO|ATTRACTIVE', i, j, matriz_distancia[i][j], sep=';')
+								print('AT', i, j, matriz_distancia[i][j], sep=';')
 							else:
 								w.write("AT;"+i+";"+j+";"+str(matriz_distancia[i][j])+"\n")
 					except:
@@ -249,14 +252,22 @@ for i in matriz_distancia:
 
 			# ligação de hidrogênio (hb) ------------------------------------
 			if show_contacts['ligacao_hidrogenio']:
-				if matriz_distancia[i][j] >= hidrogen_bond[0] and matriz_distancia[i][j] <= hidrogen_bond[1]:
+				# Reduz falsos positivos em alfa-hélices ---------------------
+				# deve ter 3 residuos entre eles no caso das 310-helix ou 4 para alfa-helices 
+				no_false_positive = True # estrategia mais simples do que calcular angulos de H
+				if abs(int(r1_num.split(':')[1]) - int(r2_num.split(':')[1])) < 3: 
+					atomo_atual = i.split(':')[-1] 
+					if atomo_atual == 'N' or atomo_atual == 'O': # verifica se pode fazer HB
+						no_false_positive = False  # bloqueia o cálculo de contato
+				# / --------------------------------------------------------------------------------	
+				if matriz_distancia[i][j] >= hidrogen_bond[0] and matriz_distancia[i][j] <= hidrogen_bond[1] and no_false_positive:
 					try:
 						if ( 
 							(contatos[r1_name][4] == 1 and contatos[r2_name][5] == 1) or # donor vs. aceptor
 							(contatos[r1_name][5] == 1 and contatos[r2_name][4] == 1)    # aceptor vs. donor
 						):
 							if saida == 'tela':
-								print('LIGAÇÃO_DE_HIDROGÊNIO|HYDROGEN_BOND', i, j, matriz_distancia[i][j], sep=';')
+								print('HB', i, j, matriz_distancia[i][j], sep=';')
 							else:
 								w.write("HB;"+i+";"+j+";"+str(matriz_distancia[i][j])+"\n")
 					except:
@@ -278,7 +289,7 @@ for i in matriz_distancia:
 								(contatos[r1_name][5] == 1 and contatos[r2_name][4] == 1)    # aceptor vs. donor
 							):
 								if saida == 'tela':
-									print('PONTE_SALINA|SALT_BRIDGE', i, j, matriz_distancia[i][j], sep=';')
+									print('SB', i, j, matriz_distancia[i][j], sep=';')
 								else:
 									w.write("SB;"+i+";"+j+";"+str(matriz_distancia[i][j])+"\n")
 					except:
@@ -290,7 +301,7 @@ for i in matriz_distancia:
 					if matriz_distancia[i][j] >= disulfide_bond[0] and matriz_distancia[i][j] <= disulfide_bond[1]:
 						try:
 							if saida == 'tela':
-								print('PONTE_DISSULFETO|DISULFIDE_BOND', i, j, matriz_distancia[i][j], sep=';')
+								print('DB', i, j, matriz_distancia[i][j], sep=';')
 							else:
 								w.write("DB;"+i+";"+j+";"+str(matriz_distancia[i][j])+"\n")
 						except:
@@ -299,4 +310,5 @@ for i in matriz_distancia:
 if(saida == 'csv'):
 	print('Contact calculation performed successfully. \nResult saved in: "contact.csv"')
 	print('\nCSV specifications:\nContact type; Residue:atom 1; Residue:atom 2; Distance\n')
-	print('Contact types:\n\tHB: hydrogen bonds (ligações de hidrogênio)\n\tHY: hydrophobic (hidrofóbico)\n\tAR: aromatic (aromático)\n\tAT: attractive (atrativo)\n\tRE: repulsive (repulsivo)\n\tSB: salt bridge (ponte de salina)\n')
+
+print('\nContact types:\n\tHB: hydrogen bonds (ligações de hidrogênio)\n\tHY: hydrophobic (hidrofóbico)\n\tAR: aromatic (aromático)\n\tAT: attractive (atrativo)\n\tRE: repulsive (repulsivo)\n\tSB: salt bridge (ponte de salina)\n')
