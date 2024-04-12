@@ -66,10 +66,10 @@ You can also use the function read_folder() to read all pdb files in a folder:
 
 ~~~
 signa.read_folder(
-  	folder='./docs/case_studies/all_pdbs', 
-  	signa_type='acsm-all', 
+    folder='./docs/case_studies/all_pdbs', 
+    signa_type='acsm-all', 
     cumulative=True,
-  	output='./docs/case_studies/output.csv',
+    output='./docs/case_studies/output.csv',
     cutoff_limit=20,
     cutoff_step=0.2,
     format='pdb'
@@ -166,10 +166,10 @@ Você pode ainda usar a função read_folder() para ler todos os pdbs em uma pas
 
 ~~~
 signa.read_folder(
-  	folder='./docs/case_studies/all_pdbs', 
-  	signa_type='acsm-all', 
+    folder='./docs/case_studies/all_pdbs', 
+    signa_type='acsm-all', 
     cumulative=True,
-  	output='./docs/case_studies/output.csv',
+    output='./docs/case_studies/output.csv',
     cutoff_limit=20,
     cutoff_step=0.2,
     format='pdb'
