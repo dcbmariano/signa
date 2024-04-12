@@ -62,6 +62,20 @@ import signa
 signa.read_csv('lista.csv', 'signa-charge')
 ~~~
 
+You can also use the function read_folder() to read all pdb files in a folder:
+
+~~~
+signa.read_folder(
+  	folder='./docs/case_studies/all_pdbs', 
+  	signa_type='acsm-all', 
+    cumulative=True,
+  	output='./docs/case_studies/output.csv',
+    cutoff_limit=20,
+    cutoff_step=0.2,
+    format='pdb'
+)
+~~~
+
 ### How to calculate contacts?
 The contact calculation script is inside the Signa directory. You can run it as follows:
 
@@ -146,6 +160,20 @@ import signa
 
 #Para processar múltiplos arquivos PDB, use:
 signa.read_csv('lista.csv', 'signa-charge')
+~~~
+
+Você pode ainda usar a função read_folder() para ler todos os pdbs em uma pasta:
+
+~~~
+signa.read_folder(
+  	folder='./docs/case_studies/all_pdbs', 
+  	signa_type='acsm-all', 
+    cumulative=True,
+  	output='./docs/case_studies/output.csv',
+    cutoff_limit=20,
+    cutoff_step=0.2,
+    format='pdb'
+)
 ~~~
 
 ### Como fazer um cálculo de contatos?
