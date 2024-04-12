@@ -375,8 +375,8 @@ def labels(signa_type='acsm', cutoff_limit = 20, cutoff_step = 0.2, separator = 
 
     header = ''
     acsm_hp_classes = ['hydrophobic x hydrophobic', 'polar x polar', 'hydrophobic x polar']
-    acsm_all_classes = ['acceptor', 'donor', 'aromatic', 'hydrophobic', 'negative', 'neutral', 'positive', 'sulfide']
-
+    acsm_all_classes = ['acceptor', 'aromatic', 'donor', 'hydrophobic', 'negative', 'neutral', 'positive', 'sulfide']
+    # 'Acc': 0, 'Aro': 1, 'Don': 2, 'Hydro': 3, 'Neg': 4, 'Neutral': 5, 'Pos': 6, 'Sul': 7, 
 
     for i in range(cutoff_limit*100, 0, -1*int(cutoff_step*100)):
 
