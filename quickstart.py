@@ -8,7 +8,7 @@ entry = './docs/examples/as.pdb'
 signature = ''
 
 # Simple use
-#signature = signa.read(entry, 'acsm-all', cutoff_limit=12, cutoff_step=0.2, separator=",", cumulative=True)
+#signature = signa.read(entry, 'acsm-all', cutoff_limit=10, cutoff_step=0.1, separator=",", cumulative=True)
 
 # SIGNA-CHARGE
 #signature = signa.read(entry, signa_type='SIGNA-CHARGE', forcefield="AMBER", cutoff_limit=12, cutoff_step=1.0, cumulative=False)
@@ -16,8 +16,8 @@ signature = ''
 # signature = signa.read(entry, 'csm', cutoff_limit=30, cutoff_step=0.2, separator=",", cumulative=True)
 
 # Obtaining the labels
-labels_example = signa.labels(signa_type='acsm-all', cutoff_step=0.2, cutoff_limit=20, separator=",", cumulative=True)
-print(labels_example)
+# labels_example = signa.labels(signa_type='acsm-all', cutoff_step=0.1, cutoff_limit=10, separator=",", cumulative=True)
+# print(labels_example)
 
 # signature = signa.read(entry, 'acsm')
 
@@ -28,7 +28,7 @@ print(labels_example)
 # Select a specific chain
 # signature = signa.read(entry, 'csm', chain='A')
 
-# Multiple files
+# Multiple files - CSV
 # signa.read_csv(
 #  	csv_file='./docs/case_studies/cs4/input_cs4.csv', 
 #  	signa_type='acsm-all', 
@@ -37,16 +37,17 @@ print(labels_example)
 #  	output='./docs/case_studies/cs4/output_acsm.csv',
 #     cutoff_limit=20
 # )
-# signa.read_csv(
-#  	csv_file='./docs/case_studies/cs6/input.csv', 
-#  	signa_type='acsm-all', 
-#     cumulative=True,
-#    #  forcefield='AMBER',
-#  	output='./docs/case_studies/cs6/output_acsm.csv',
-#     cutoff_limit=20,
-#     cutoff_step=0.2
-# )
 
+# Multiple files - Folder
+signa.read_folder(
+ 	folder='./docs/case_studies/cs7/interfaces', 
+ 	signa_type='acsm-all', 
+    cumulative=True,
+ 	output='./docs/case_studies/cs7/output_acsm.csv',
+    cutoff_limit=10,
+    cutoff_step=0.1,
+    format='pdb'
+)
 # SSV - Comparisons between signatures
 #ssv = signa.ssv(entry, entry)
 #print(ssv)

@@ -5,7 +5,7 @@
 # Department of Computer Science: Universidade Federal de Minas Gerais, Brazil
 # License MIT - https://opensource.org/licenses/MIT
 # -----------------------------------------------------------------------------
-version = 'Signa v1.0'
+version = 'Signa v1.1'
 """
 # ----------------------------------------------------------------------------
   Signa library 
@@ -66,9 +66,39 @@ def read_pdb(pdbID, atom='ALL', chain='ALL'):
 def read_mmcif():
     pass
 
+def read_folder(folder, signa_type = 'csm', output="output.csv", 
+    cutoff_limit=20, cutoff_step=0.2, output_csv=True, verbose=True, chain='ALL', forcefield='AMBER', separator=',', cumulative=True, format='pdb'):
+    """Read several PDB files in a folder"""
+    if verbose:
+        print("Running Signa Multi-file | folder")
+        print("Signature type: "+signa_type)
+        print('...')
+
+    w = open(output, "w")
+    i = 'pdb_tmp'
+
+    import glob
+
+    directory = glob.glob(folder+"/*."+format)
+    
+    cont = 0
+    for pdb_file in directory:
+
+        signature = read(pdb_file, signa_type, cutoff_limit, cutoff_step, output_csv, chain, verbose, cumulative, separator, forcefield)
+
+        w.write(pdb_file+separator)
+        w.write(signature+"\n")
+
+        cont+=1
+        if verbose:
+            print(cont,'/',len(directory),'-',i)
+
+    w.close()
+
+    print('Success! Results saved in the file: '+output)
 
 def read_csv(csv_file, signa_type = 'csm', output="output.csv", 
-    cutoff_limit=30, cutoff_step=0.2, output_csv=True, verbose=True, chain='ALL', forcefield='AMBER', separator=',', cumulative=True):
+    cutoff_limit=20, cutoff_step=0.2, output_csv=True, verbose=True, chain='ALL', forcefield='AMBER', separator=',', cumulative=True):
     """Read several PDB files
         This function receives a list of PDB files and ]
             returns a CSV with signatures
@@ -109,7 +139,7 @@ def read_csv(csv_file, signa_type = 'csm', output="output.csv",
     print('Success! Results saved in the file: '+output)
 
 
-def csm(pdbID, signa_type = 'csm', cutoff_limit=30, cutoff_step=0.2, output_csv=True, chain='ALL', verbose=True, cumulative=True, separator=','):
+def csm(pdbID, signa_type = 'csm', cutoff_limit=20, cutoff_step=0.2, output_csv=True, chain='ALL', verbose=True, cumulative=True, separator=','):
     """ aCSM Algorithm
     This function implements the aCSM algorithm. 
 
@@ -284,6 +314,7 @@ def contacts():
     """Implements contacts calculus
         Use: python Signa/plugins/contacts.py
     """
+    print("Please, use: 'from Signa import contacts'")
     pass
 
 
@@ -309,7 +340,7 @@ def ssv(pdb1, pdb2, signa_type='acsm_all', cutoff_limit=10,
     return ssv[0]
 
 
-def read(pdbID, signa_type='csm', cutoff_limit = 30, cutoff_step = 0.2, output_csv = True, chain='ALL', verbose=True, cumulative=True, separator=",", forcefield='AMBER'):
+def read(pdbID, signa_type='csm', cutoff_limit = 20, cutoff_step = 0.2, output_csv = True, chain='ALL', verbose=True, cumulative=True, separator=",", forcefield='AMBER'):
     """Function read_pdb()
     This function aims to read ".pdb" files
 
@@ -436,31 +467,6 @@ def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=
     sign = ''
     for c in cont:
         sign+=str(c)+separator
-
-    # bloco lento -------------------------------------------------------------
-    # for dist2 in np.arange(dmin+dstp, dmax+dstp, dstp):
-    #     dist1 = dist2 - dstp
-
-    #     for i in range(len(cdm)):
-    #         for j in range(len(cdm)):
-
-    #             if j <= i:  # remove diagonal
-    #                 continue 
-
-    #             # criterium 1: dist must be lower
-    #             if dist[i][j] <= dist2 and dist[i][j] > dist1:
-
-    #                 # for charge difference - from 0 until 2
-    #                 for ct in range(len(cont)):
-    #                     charge_min = 0.25*ct # divide into 8 charge clusters
-    #                     charge_max = charge_min + 0.25
-
-    #                     if cdm[i][j] > charge_min and cdm[i][j] <= charge_max:
-    #                         cont[ct]+=1
-                    
-    #     for ct in cont:
-    #         sign+=str(ct)+separator
-    # FIM bloco lento -----------------------------------------------------------
 
     sign = sign[:-1] # structural signature
 
