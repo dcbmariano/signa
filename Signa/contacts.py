@@ -2,7 +2,7 @@ import math
 import sys
 '''
 Script: contacts.py
-Version: 0.3
+Version: 0.4
 Function: Simple script for calculating contacts
 Use: python contacts.py [file-name].pdb [optional: -hb -hy -ar -re -at -sb -db -csv]
     -hb hydrogen bonds  -hy hydrophobic  -ar aromatic         -re repulsive 
@@ -255,10 +255,10 @@ for i in matriz_distancia:
 				# Reduz falsos positivos em alfa-hélices ---------------------
 				# deve ter 3 residuos entre eles no caso das 310-helix ou 4 para alfa-helices 
 				no_false_positive = True # estrategia mais simples do que calcular angulos de H
-				if abs(int(r1_num.split(':')[1]) - int(r2_num.split(':')[1])) < 3: 
-					atomo_atual = i.split(':')[-1] 
-					if atomo_atual == 'N' or atomo_atual == 'O': # verifica se pode fazer HB
-						no_false_positive = False  # bloqueia o cálculo de contato
+				# if abs(int(r1_num.split(':')[1]) - int(r2_num.split(':')[1])) < 3: 
+				# 	atomo_atual = i.split(':')[-1] 
+				# 	if atomo_atual == 'N' or atomo_atual == 'O': # verifica se pode fazer HB
+				# 		no_false_positive = False  # bloqueia o cálculo de contato
 				# / --------------------------------------------------------------------------------	
 				if matriz_distancia[i][j] >= hidrogen_bond[0] and matriz_distancia[i][j] <= hidrogen_bond[1] and no_false_positive:
 					try:

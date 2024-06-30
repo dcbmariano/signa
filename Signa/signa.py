@@ -5,7 +5,7 @@
 # Department of Computer Science: Universidade Federal de Minas Gerais, Brazil
 # License MIT - https://opensource.org/licenses/MIT
 # -----------------------------------------------------------------------------
-version = 'Signa v1.1'
+version = 'Signa v1.2'
 """
 # ----------------------------------------------------------------------------
   Signa library 
@@ -397,6 +397,12 @@ def labels(signa_type='acsm', cutoff_limit = 20, cutoff_step = 0.2, separator = 
             for x in range(len(acsm_all_classes)):
                 for y in range(x,len(acsm_all_classes)):
                     header += acsm_all_classes[x]+' x '+acsm_all_classes[y]+' ('+str(i)+'-'+str(end)+')'+separator
+    if signa_type.upper() == 'SIGNA-CHARGE':
+        for i in range(int(cutoff_step*100), (cutoff_limit*100)+int(cutoff_step*100), int(cutoff_step*100)):
+            i = i/100
+            for j in range(25,201,25):
+                j = j/100
+                header += str(round(i,2))+"_"+str(round(j,2))+separator
 
     header = header[:-1] # remove the last separator ','
 

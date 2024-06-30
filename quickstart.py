@@ -16,9 +16,9 @@ signature = ''
 # signature = signa.read(entry, 'csm', cutoff_limit=30, cutoff_step=0.2, separator=",", cumulative=True)
 
 # Obtaining the labels
-labels_example = signa.labels(signa_type='acsm-all', cutoff_step=0.05, cutoff_limit=6, separator=",", cumulative=True)
+labels_example = signa.labels(signa_type='signa-charge', cutoff_step=0.2, cutoff_limit=12, separator=",", cumulative=False)
 print(labels_example)
-# exit()
+exit()
 
 # signature = signa.read(entry, 'acsm')
 
@@ -40,15 +40,16 @@ print(labels_example)
 # )
 
 # Multiple files - Folder
-# signa.read_folder(
-#  	folder='./docs/case_studies/cs7/interfaces', 
-#  	signa_type='acsm-all', 
-#     cumulative=True,
-#  	output='./docs/case_studies/cs7/output_acsm_nc_2.csv',
-#     cutoff_limit=6,
-#     cutoff_step=0.05,
-#     format='pdb'
-# )
+signa.read_folder(
+ 	folder='./docs/case_studies/cs6/modelos', 
+ 	signa_type='signa-charge', 
+    forcefield='AMBER',
+    cumulative=False,
+ 	output='./docs/case_studies/cs6/signa_NC_12_0.2.csv',
+    cutoff_limit=12,
+    cutoff_step=0.2,
+    format='pdb'
+)
 
 # SSV - Comparisons between signatures
 #ssv = signa.ssv(entry, entry)
