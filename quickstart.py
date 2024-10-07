@@ -16,7 +16,7 @@ signature = ''
 # signature = signa.read(entry, 'csm', cutoff_limit=30, cutoff_step=0.2, separator=",", cumulative=True)
 
 # Obtaining the labels
-labels_example = signa.labels(signa_type='signa-charge', cutoff_step=0.2, cutoff_limit=12, separator=",", cumulative=False)
+labels_example = signa.labels(signa_type='acsm-all', cutoff_step=0.2, cutoff_limit=20, separator=",", cumulative=True)
 print(labels_example)
 exit()
 
