@@ -98,6 +98,7 @@ If no parameter is entered, SIGNA-contacts will calculate all contacts.
 
 ### Signatures and methods available
 - SIGNA-CHARGE
+- SIGNA-ELEMENTAL
 - CSM
 - aCSM
 - aCSM-HP
@@ -199,6 +200,7 @@ Se nenhum parâmetro for informado, SIGNA irá calcular todos os contatos.
 ### Assinaturas e métodos disponíveis
 
 - SIGNA-CHARGE
+- SIGNA-ELEMENTAL
 - CSM
 - aCSM
 - aCSM-HP
