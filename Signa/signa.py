@@ -5,7 +5,7 @@
 # Department of Computer Science: Universidade Federal de Minas Gerais, Brazil
 # License MIT - https://opensource.org/licenses/MIT
 # -----------------------------------------------------------------------------
-version = 'Signa v1.2.1'
+version = 'Signa v1.3'
 """
 # ----------------------------------------------------------------------------
   Signa library 
