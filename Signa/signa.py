@@ -521,7 +521,9 @@ def dist(x1,y1,z1,x2,y2,z2):
     return ((x1 - x2)**2 + (y1-y2)**2 + (z1-z2)**2)**(1/2)
 
 def signa_elemental(pdbID, chain="ALL", separator=',', verbose=True, cutoff_limit=6, cutoff_step=0.2, cumulative=True, format='PDB', show_labels=False):
-    """ Calculates de structural signature: SIGNA-ELEMENTAL """
+    """ Calculates de structural signature: SIGNA-ELEMENTAL 
+        SigEl uses the following atoms as default: CNOS + X (any other atom)
+    """
 
     # Step 1 - dist | distance matrix -----------------------------------------
     if format.upper() == 'PDB':
@@ -537,6 +539,7 @@ def signa_elemental(pdbID, chain="ALL", separator=',', verbose=True, cutoff_limi
     cmax = int(cutoff_limit * 10)
     cstep = int(cutoff_step * 10)
 
+    # create signature matrix empty
     for d in range(cstep, cmax, cstep):
         signature[d] = {}
         for i2 in range(len(elements)):
@@ -547,14 +550,13 @@ def signa_elemental(pdbID, chain="ALL", separator=',', verbose=True, cutoff_limi
                     continue # remove diagonal
                 signature[d][i+j] = 0
 
-
-    # Step 1 - dist | distance matrix -----------------------------------------
+    # read pdb/pdbx file
     if format.upper() == 'PDB':
         atom_name, coords, residues = read_pdb(pdbID, chain=chain)
     elif format.upper() == 'MMCIF' or format.upper() == 'CIF' or format.upper() == 'PDBX':
         atom_name, coords, residues = read_mmcif(pdbID, chain=chain)
 
-
+    # calculates the distances
     for i2 in range(len(coords)):
         for j2 in range(len(coords)):
             i = coords[i2]
@@ -576,8 +578,6 @@ def signa_elemental(pdbID, chain="ALL", separator=',', verbose=True, cutoff_limi
                 dtmp = d*10 # angstroms => nanometros
 
                 if dtmp > intervalo-cstep and dtmp <= intervalo:
-                    #print(atomo1, atomo2, d)
-
                     try:
                         signature[intervalo][atom1 + atom2] += 1
                     except:
@@ -600,5 +600,5 @@ def signa_elemental(pdbID, chain="ALL", separator=',', verbose=True, cutoff_limi
                 header += j+":"+str((i-cstep)/10)+"-"+str(i/10)+","
         header = header[:-1]
         print(header)
-        
+
     return sig
