@@ -5,7 +5,7 @@
 # Department of Computer Science: Universidade Federal de Minas Gerais, Brazil
 # License MIT - https://opensource.org/licenses/MIT
 # -----------------------------------------------------------------------------
-version = 'Signa v1.2'
+version = 'Signa v1.2.1'
 """
 # ----------------------------------------------------------------------------
   Signa library 
@@ -63,8 +63,35 @@ def read_pdb(pdbID, atom='ALL', chain='ALL'):
 
     return atom_name, coords, residues
 
-def read_mmcif():
-    pass
+def read_mmcif(pdbID, atom='ALL', chain='ALL'):
+    """ Read a MMCIF file """
+    residues = []
+    atom_name = []
+    coords = []
+
+    for line in readFile(pdbID):
+        if line[0:4] == 'ATOM':
+            line = line.split() # basic support to mmcif; works in most cases
+            atom_id = int(line[1])
+            atom_name_current = line[3] # atom name for the current atom
+            res_name = line[5] # 3 letter code
+            chain_name = line[6] # atom chain
+            res_id = int(line[8]) # amino acid residue id
+            x = float(line[10]) # coord x
+            y = float(line[11]) # coord y
+            z = float(line[12]) # coord z
+
+            if atom=='CA':  # only alpha carbon
+                if atom_name_current != 'CA':
+                    continue
+            if chain != 'ALL': # only one chain allowed
+                if chain_name.upper() != chain.upper():
+                    continue
+            coords.append([x, y, z])
+            residues.append(res_name)
+            atom_name.append(atom_name_current)
+
+    return atom_name, coords, residues
 
 def read_folder(folder, signa_type = 'csm', output="output.csv", 
     cutoff_limit=20, cutoff_step=0.2, output_csv=True, verbose=True, chain='ALL', forcefield='AMBER', separator=',', cumulative=True, format='pdb'):
@@ -139,7 +166,7 @@ def read_csv(csv_file, signa_type = 'csm', output="output.csv",
     print('Success! Results saved in the file: '+output)
 
 
-def csm(pdbID, signa_type = 'csm', cutoff_limit=20, cutoff_step=0.2, output_csv=True, chain='ALL', verbose=True, cumulative=True, separator=','):
+def csm(pdbID, signa_type = 'csm', cutoff_limit=20, cutoff_step=0.2, output_csv=True, chain='ALL', verbose=True, cumulative=True, separator=',', format='PDB'):
     """ aCSM Algorithm
     This function implements the aCSM algorithm. 
 
@@ -240,9 +267,15 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=20, cutoff_step=0.2, output_csv=
     # Get atoms coords
     # ------------------------------------------------------------------------
     if signa_type == 'csm':
-        atom_name, coords, residues = read_pdb(pdbID, atom='CA', chain=chain)
+        if format.upper() == 'PDB':
+            atom_name, coords, residues = read_pdb(pdbID, atom='CA', chain=chain)
+        elif format.upper() == 'MMCIF' or format.upper() == 'CIF' or format.upper() == 'PDBX':
+            atom_name, coords, residues = read_mmcif(pdbID, atom='CA', chain=chain)
     else:
-        atom_name, coords, residues = read_pdb(pdbID, chain=chain)
+        if format.upper() == 'PDB':
+            atom_name, coords, residues = read_pdb(pdbID, chain=chain)
+        elif format.upper() == 'MMCIF' or format.upper() == 'CIF' or format.upper() == 'PDBX':
+            atom_name, coords, residues = read_mmcif(pdbID, chain=chain)
 
     if len(atom_name) == 0:
         print('No match found.')
@@ -278,7 +311,7 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=20, cutoff_step=0.2, output_csv=
             sign += str(edge_count)+separator
         
         # 1: CSM-HP
-        elif signa_type == 1 or signa_type.lower() == 'acsm_hp':
+        elif signa_type == 1 or signa_type.lower() == 'acsm_hp' or signa_type.lower() == 'acsm-hp':
 
             dist_hh = dist[resh].T[resh]
             edge_count_hh = int(((dist_hh<=cutoff_end)&(dist_hh>cutoff_start)).sum()/2)
@@ -311,7 +344,7 @@ def csm(pdbID, signa_type = 'csm', cutoff_limit=20, cutoff_step=0.2, output_csv=
         return np.array(result)
 
 def contacts():
-    """Implements contacts calculus
+    """Implements contacts calculation
         Use: python Signa/plugins/contacts.py
     """
     print("Please, use: 'from Signa import contacts'")
@@ -340,7 +373,7 @@ def ssv(pdb1, pdb2, signa_type='acsm_all', cutoff_limit=10,
     return ssv[0]
 
 
-def read(pdbID, signa_type='csm', cutoff_limit = 20, cutoff_step = 0.2, output_csv = True, chain='ALL', verbose=True, cumulative=True, separator=",", forcefield='AMBER'):
+def read(pdbID, signa_type='csm', cutoff_limit = 20, cutoff_step = 0.2, output_csv = True, chain='ALL', verbose=True, cumulative=True, separator=",", forcefield='AMBER', format='PDB', show_labels=False):
     """Function read_pdb()
     This function aims to read ".pdb" files
 
@@ -348,9 +381,11 @@ def read(pdbID, signa_type='csm', cutoff_limit = 20, cutoff_step = 0.2, output_c
         mapas de átomos hidrofóbicos, mapas de átomos por tipo
     """
     if signa_type.lower() == 'signa_charge' or signa_type.lower() == 'signa-charge':
-        return signa_charge(pdbID, forcefield, chain, separator, verbose, cutoff_limit, cutoff_step, cumulative)
+        return signa_charge(pdbID, forcefield, chain, separator, verbose, cutoff_limit, cutoff_step, cumulative, format)
+    elif signa_type.lower() == 'signa-elemental' or signa_type.lower() == 'signa_elemental':
+        return signa_elemental(pdbID, chain, separator, verbose, cutoff_limit, cutoff_step, cumulative, format, show_labels)
     else:
-        return csm(pdbID, signa_type, cutoff_limit, cutoff_step, output_csv, chain, verbose, cumulative, separator)
+        return csm(pdbID, signa_type, cutoff_limit, cutoff_step, output_csv, chain, verbose, cumulative, separator, format)
     
 
 def labels(signa_type='acsm', cutoff_limit = 20, cutoff_step = 0.2, separator = ',', cumulative=True):
@@ -409,7 +444,7 @@ def labels(signa_type='acsm', cutoff_limit = 20, cutoff_step = 0.2, separator = 
     return header
 
 
-def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=True, cutoff_limit=30, cutoff_step=0.2, cumulative=True):
+def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=True, cutoff_limit=30, cutoff_step=0.2, cumulative=True, format='PDB'):
     """ Calculates de structural signature: SIGNA-CHARGE """
 
     # forcefield values [0]=>AMBER [1] CHARMM | data obtained from nApoli
@@ -423,7 +458,10 @@ def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=
         ff_value = { i:j[1] for i,j in ff_values.items() }
 
     # Step 1 - dist | distance matrix -----------------------------------------
-    atom_name, coords, residues = read_pdb(pdbID, chain=chain)
+    if format.upper() == 'PDB':
+        atom_name, coords, residues = read_pdb(pdbID, chain=chain)
+    elif format.upper() == 'MMCIF' or format.upper() == 'CIF' or format.upper() == 'PDBX':
+        atom_name, coords, residues = read_mmcif(pdbID, chain=chain)
 
     if len(atom_name) == 0:
         print('No match found.')
@@ -477,3 +515,90 @@ def signa_charge(pdbID, forcefield="AMBER", chain="ALL", separator=',', verbose=
     sign = sign[:-1] # structural signature
 
     return sign
+
+def dist(x1,y1,z1,x2,y2,z2):
+    """ Returns the Euclidian distance; input (6 numeric values): x1,y1,z1,x2,y2,z2 """
+    return ((x1 - x2)**2 + (y1-y2)**2 + (z1-z2)**2)**(1/2)
+
+def signa_elemental(pdbID, chain="ALL", separator=',', verbose=True, cutoff_limit=6, cutoff_step=0.2, cumulative=True, format='PDB', show_labels=False):
+    """ Calculates de structural signature: SIGNA-ELEMENTAL """
+
+    # Step 1 - dist | distance matrix -----------------------------------------
+    if format.upper() == 'PDB':
+        atom_name, coords, residues = read_pdb(pdbID, chain=chain)
+    elif format.upper() == 'MMCIF' or format.upper() == 'CIF' or format.upper() == 'PDBX':
+        atom_name, coords, residues = read_mmcif(pdbID, chain=chain)
+
+    signature = {}
+    #elements = ["C", "N", "P", "O", "S", "F", "Cl", "Br", "I", "B"]
+    elements = ["C", "N", "O", "S", "X"]
+
+    #converter angstroms para nanometros
+    cmax = int(cutoff_limit * 10)
+    cstep = int(cutoff_step * 10)
+
+    for d in range(cstep, cmax, cstep):
+        signature[d] = {}
+        for i2 in range(len(elements)):
+            for j2 in range(len(elements)):
+                i = elements[i2]
+                j = elements[j2]
+                if j2 < i2:
+                    continue # remove diagonal
+                signature[d][i+j] = 0
+
+
+    # Step 1 - dist | distance matrix -----------------------------------------
+    if format.upper() == 'PDB':
+        atom_name, coords, residues = read_pdb(pdbID, chain=chain)
+    elif format.upper() == 'MMCIF' or format.upper() == 'CIF' or format.upper() == 'PDBX':
+        atom_name, coords, residues = read_mmcif(pdbID, chain=chain)
+
+
+    for i2 in range(len(coords)):
+        for j2 in range(len(coords)):
+            i = coords[i2]
+            j = coords[j2]
+
+            if j2 < i2:
+                continue # remove diagonal
+
+            d = dist(i[0], i[1], i[2], j[0], j[1], j[2])
+            atom1 = atom_name[i2]
+            atom2 = atom_name[j2]
+
+            if atom1 not in elements:
+                atom1 = "X"
+            if atom2 not in elements:
+                atom2 = "X"
+
+            for intervalo in range(cstep, cmax, cstep):
+                dtmp = d*10 # angstroms => nanometros
+
+                if dtmp > intervalo-cstep and dtmp <= intervalo:
+                    #print(atomo1, atomo2, d)
+
+                    try:
+                        signature[intervalo][atom1 + atom2] += 1
+                    except:
+                        signature[intervalo][atom2 + atom1] += 1
+
+    sig = ""
+
+    for a in signature:
+        labels = signature[a].keys()
+        for i in signature[a]:
+            sig += str(signature[a][i])+","
+
+    sig = sig[:-1]
+
+    # print labels
+    if show_labels:
+        header = ""
+        for i in range(cstep, cmax, cstep):
+            for j in labels:
+                header += j+":"+str((i-cstep)/10)+"-"+str(i/10)+","
+        header = header[:-1]
+        print(header)
+        
+    return sig
