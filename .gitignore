@@ -3,4 +3,7 @@
 *.pyc
 docs/img/~$signa_thesis.pptx
 docs/img/signa_thesis.pptx
-docs/case_studies/
+docs/case_studies/outros
+docs/case_studies/cs1/pdb_files
+docs/case_studies/cs4/input*
+docs/case_studies/cs4/pdb

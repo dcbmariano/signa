@@ -17,14 +17,14 @@ signature = ''
 #signature = signa.read(entry, signa_type='SIGNA-CHARGE', forcefield="AMBER", cutoff_limit=12, cutoff_step=1.0, cumulative=False)
 
 # SIGNA-ELEMENTAL
-signature = signa.read(entry,signa_type='signa-elemental', cutoff_limit=6, cutoff_step=1.0, cumulative=False, show_labels=True)
+#signature = signa.read(entry,signa_type='signa-elemental', cutoff_limit=6, cutoff_step=1.0, cumulative=False, show_labels=True)
 
 # signature = signa.read(entry, 'csm', cutoff_limit=30, cutoff_step=0.2, separator=",", cumulative=True)
 
 # Obtaining the labels
-#labels_example = signa.labels(signa_type='acsm-all', cutoff_step=0.2, cutoff_limit=20, separator=",", cumulative=True)
+#labels_example = signa.labels(signa_type='acsm-all', cutoff_step=0.1, cutoff_limit=10, separator="\t", cumulative=True)
 #print(labels_example)
-
+#exit()
 
 # signature = signa.read(entry, 'acsm')
 
@@ -46,16 +46,16 @@ signature = signa.read(entry,signa_type='signa-elemental', cutoff_limit=6, cutof
 # )
 
 # Multiple files - Folder
-# signa.read_folder(
-#  	folder='./docs/case_studies/cs6/modelos', 
-#  	signa_type='signa-charge', 
-#     forcefield='AMBER',
-#     cumulative=False,
-#  	output='./docs/case_studies/cs6/signa_NC_12_0.2.csv',
-#     cutoff_limit=12,
-#     cutoff_step=0.2,
-#     format='pdb'
-# )
+signa.read_folder(
+ 	folder='./docs/case_studies/luana2', 
+ 	signa_type='signa-elemental', 
+    #forcefield='AMBER',
+    cumulative=True,
+ 	output='./docs/case_studies/luana2/signa_elemental_10_0.1.csv',
+    cutoff_limit=10,
+    cutoff_step=0.1,
+    format='pdb'
+)
 
 # SSV - Comparisons between signatures
 #ssv = signa.ssv(entry, entry)
